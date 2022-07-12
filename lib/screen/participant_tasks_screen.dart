@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:score_system/component/pie_diagram.dart';
+import 'package:flutter/services.dart';
 import 'package:score_system/model/person.dart';
+import 'package:score_system/model/person_progress.dart';
 import 'package:score_system/model/task.dart';
 import 'package:score_system/screen/menu/bottom_menu.dart';
 import 'package:score_system/service/person_service.dart';
 import 'package:score_system/util/date_util.dart';
 import 'package:score_system/vocabulary/constant.dart';
 import 'package:score_system/vocabulary/task_data.dart';
-import 'package:tuple/tuple.dart';
 
 import '../main.dart';
+import '../model/person_task_progress.dart';
 
 class ParticipantTasksArguments {
   final Person _person;
-  ParticipantTasksArguments(this._person);
+  final DateTime _dtBeg;
+  final DateTime _dtEnd;
+  ParticipantTasksArguments(this._person, this._dtBeg, this._dtEnd);
 }
 
 class ParticipantTasksPage extends StatefulWidget {
@@ -24,18 +27,30 @@ class ParticipantTasksPage extends StatefulWidget {
   const ParticipantTasksPage({Key? key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() {
-    return ParticipantTasksPageState();
-  }
+  State<StatefulWidget> createState() => _ParticipantTasksPageState();
 
 }
 
-class ParticipantTasksPageState extends State<ParticipantTasksPage> {
-  late final Person _person;
-  late final PersonTaskProgress _personProgress;
-  late final Map<TaskIdDateActivity, Tuple2<int, int>> _personByTasksProgress;
+class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
+  final String scoreTitlePart = "баллов";
+  late Person _person;
+  late DateTime _dtBeg;
+  late DateTime _dtEnd;
+  late PersonProgress? _personProgress;
+  late List<PersonTaskProgress>? _personTaskProgress;
   int selectedIndex = 0;
-  Map<String, TaskStatus?> taskStatusVal = {};
+  Map<String, bool> taskCheck = {};
+
+  Map<String, TextEditingController> scoreController = {};
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    scoreController.values.forEach((element) {
+      element.dispose();
+    });
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -46,9 +61,23 @@ class ParticipantTasksPageState extends State<ParticipantTasksPage> {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as ParticipantTasksArguments;
     _person = args._person;
-    DateTime dt = DateTime.now();
-    _personProgress = getIt<PersonService>().getPersonProgressByDateInterval(_person, dt.subtract(Duration(days:1)), dt.add(Duration(days: 1)));
-    _personByTasksProgress = getIt<PersonService>().getActualPersonProgressByDate(_person, dt);
+    final DateTime now = DateTime.now();
+    _dtBeg = args._dtBeg;
+    _dtEnd = args._dtEnd;
+    _personProgress = getIt<PersonService>().getPersonProgress(_person, _dtBeg, _dtEnd)[_person];
+    _personTaskProgress = getIt<PersonService>().getPersonTaskProgress(_person, _dtBeg, _dtEnd)[_person];
+    if (_personTaskProgress != null) {
+      int cnt = -1;
+      _personTaskProgress!.forEach((element) {
+        int i = ++cnt;
+        TextEditingController controller = TextEditingController(text: '${element.sum}' );
+        // Start listening to changes.
+        controller.addListener(() => _taskFactModiSum(element, int.parse(controller.text)));
+        String id = _personTaskProgress![i].id;
+        scoreController[id] = controller;
+        taskCheck[id] = _personTaskProgress![i].status == TaskStatus.DONE ? true : false;
+      });
+    }
     return Scaffold(
       appBar: AppBar(
         title: Container(
@@ -70,7 +99,7 @@ class ParticipantTasksPageState extends State<ParticipantTasksPage> {
                   // crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
-                      width: MediaQuery.of(context).size.width / 3,
+                      width: MediaQuery.of(context).size.width / 5,
                       // alignment: Alignment.center,
                       child:
                       CircleAvatar(
@@ -87,7 +116,7 @@ class ParticipantTasksPageState extends State<ParticipantTasksPage> {
                       ),
                     ),
                     Container(
-                        width: MediaQuery.of(context).size.width / 3,
+                        width: MediaQuery.of(context).size.width / 5,
                         // alignment: Alignment.center,
                         // padding: EdgeInsets.only(bottom: 25, left: 20, right: 20),
                         child: Container(
@@ -103,85 +132,136 @@ class ParticipantTasksPageState extends State<ParticipantTasksPage> {
                           ),
                         )
                     ),
-                    Container(
-                      width: MediaQuery.of(context).size.width / 3,
-                      child: TaskStatPie(
-                          dataMap: {
-                            "Провалено" : _personProgress.failProgress as double,
-                            "Успешно" : _personProgress.successProgress as double,
-                            "Осталось" : (_personProgress.allProgress - _personProgress.successProgress - _personProgress.failProgress) as double
-                          },
-                          title: "${_personProgress.successProgress} из ${_personProgress.allProgress}",
-                          colorList: taskPieColorList
+                    Column(children: [
+                      Container(
+                        // padding: EdgeInsets.only(left: 30),
+                        alignment: Alignment.center,
+                        child:
+                        _personProgress == null ? Text("Нет данных") :
+                        Text(
+                          "Всего $scoreTitlePart: ${_personProgress!.sumAll}",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontFamily: FONT_FAMILY_SECOND,
+                          ),
+                        ),
                       ),
-                    ),
+                      Container(
+                        // padding: EdgeInsets.only(left: 30),
+                        alignment: Alignment.center,
+                        child:
+                        Text(
+                          "Сегодня: ${_personProgress!.sumLocal}",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Theme.of(context).colorScheme.secondary,
+                            fontFamily: FONT_FAMILY_SECOND,
+                          ),
+                        ),
+                      ),
+                    ],)
                   ],
                 ),
             ),
             Expanded(child:
               ListView(
                 children:
-                _personByTasksProgress.entries.map((entry) =>
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      // crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Container(
-                          width: MediaQuery.of(context).size.width / 3,
-                          // alignment: Alignment.center,
-                          child:
-                            Container(
-                              width: MediaQuery.of(context).size.width / 3,
-                              // alignment: Alignment.center,
-                              child:
-                                entry.key.activity.avaPath != null ?
-                                Image.asset(
-                                  entry.key.activity.avaPath!,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ) : Icon(Icons.description, color: Theme.of(context).colorScheme.primary)
-                            )
-                        ),
-                        Container(
-                            width: MediaQuery.of(context).size.width / 3,
-                            child: Container(
-                              alignment: Alignment.center,
-                              child:
-                              Text(
-                                entry.key.activity.name!,
-                                style: TextStyle(
-                                  fontSize: 26,
-                                  fontFamily: FONT_FAMILY_SECOND,
-                                ),
+                  [
+                    if (_personTaskProgress == null || _personTaskProgress!.isEmpty) ...[
+                      Container(),
+                    ] else ...
+                      _personTaskProgress!.map((personTaskProgress) =>
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            // crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Container(
+                                  width: MediaQuery.of(context).size.width / 5,
+                                  // alignment: Alignment.center,
+                                  child:
+                                  Container(
+                                      width: MediaQuery.of(context).size.width / 5,
+                                      // alignment: Alignment.center,
+                                      child:
+                                      personTaskProgress.activity.avaPath != null ?
+                                      Image.asset(
+                                        personTaskProgress.activity.avaPath!,
+                                        color: Theme.of(context).colorScheme.primary,
+                                      ) : Icon(Icons.description, color: Theme.of(context).colorScheme.primary)
+                                  )
                               ),
-                            )
-                        ),
-                        Container(
-                          width: MediaQuery.of(context).size.width / 3,
-                          child:
-                            Column(
-                              children: List.generate(entry.value.item1,
-                                (index) => Container(
-                                    child: Checkbox(
-                                      checkColor: Colors.white,
-                                      fillColor: MaterialStateProperty.resolveWith(getColor),
-                                      value: taskStatusVal['${entry.key.taskId}_$index'] == TaskStatus.DONE ? true : false,
-                                      onChanged:
-                                        (bool? status) {
-                                          setState(() {
-                                            taskStatusVal['${entry.key.taskId}_$index'] = status! ? TaskStatus.DONE : TaskStatus.NONE;
-                                            if (status) {
-                                              addRemoveTaskFact(entry.key.taskId, entry.key.dt, status);
-                                            }
-                                        });
-                                      },
+                              Container(
+                                  width: MediaQuery.of(context).size.width / 5,
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    child:
+                                    Text(
+                                      personTaskProgress.activity.name!,
+                                      style: TextStyle(
+                                        fontSize: 26,
+                                        fontFamily: FONT_FAMILY_SECOND,
                                       ),
-                                )
-                              )
-                            )
-                        )
-                      ]
-                    )).toList(),
-              )
+                                    ),
+                                  )
+                              ),
+                              Container(
+                                  width: MediaQuery.of(context).size.width / 5,
+                                  // alignment: Alignment.center,
+                                  child:
+                                  Container(
+                                      width: MediaQuery.of(context).size.width / 5,
+                                      // alignment: Alignment.center,
+                                      child:
+                                        Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children:
+                                          [ Expanded(
+                                              child:
+                                                TextField(
+                                                  controller: scoreController[personTaskProgress.id],
+                                                  keyboardType: TextInputType.number,
+                                                  inputFormatters: [FilteringTextInputFormatter.digitsOnly], // Only numbers can be entered
+                                                )
+                                            ),
+                                            Expanded(
+                                              child:
+                                                Text(scoreTitlePart),
+                                            )
+                                          ],
+                                        ),
+                                  )
+                              ),
+                              Container(
+                                  width: MediaQuery.of(context).size.width / 5,
+                                  // alignment: Alignment.center,
+                                  child:
+                                  Container(
+                                      width: MediaQuery.of(context).size.width / 5,
+                                      // alignment: Alignment.center,
+                                      child:
+                                        Text(DateUtil.DATE_FORMATTER.format(personTaskProgress.dt))
+                                  )
+                              ),
+                              Container(
+                                width: MediaQuery.of(context).size.width / 5,
+                                child:
+                                  Checkbox(
+                                    checkColor: Colors.white,
+                                    fillColor: MaterialStateProperty.resolveWith(getColor),
+                                    value: taskCheck[personTaskProgress.id],
+                                    onChanged: (bool? status) => setState(() {
+                                      taskCheck[personTaskProgress.id] = status!;
+                                      addRemoveTaskFact(personTaskProgress, int.parse(scoreController[personTaskProgress.id]!.text), status);
+                                      personTaskProgress.status = status ? TaskStatus.DONE : TaskStatus.NONE;
+                                    }),
+                                  ),
+                              ),
+                            ],
+                          )
+                      ).toList(),
+                  ],
+              ),
             ),
           ]
         ),
@@ -192,16 +272,58 @@ class ParticipantTasksPageState extends State<ParticipantTasksPage> {
 
   }
 
-  void addRemoveTaskFact(int taskId, DateTime dt, bool status) {
+  void addRemoveTaskFact(PersonTaskProgress personTaskProgress, int sum, bool status) {
     DateTime now = DateTime.now();
-    TaskPlan taskPlan = getIt<TaskPlanData>().getData().where((element) => element.id == taskId).first;
+    List<TaskFact> data = getIt<TaskFactData>().getData();
+    List<TaskFact> taskFacts = data
+        .where((fact) =>
+          personTaskProgress.id == PersonTaskProgress.makeId(fact)).toList()
+        ;
+    bool isCreate = false;
+    if (taskFacts.isEmpty) {
+      isCreate = true;
+    }
     if (status) {
-      TaskFact taskFact = TaskFact(id: -1, taskPlan: taskPlan, person: _person, dtPlan: dt, dtExecute: now);
-      int id = getIt<TaskFactData>().addEntity(taskFact);
+      if (isCreate) {
+        int taskFactCnt = data
+            .where((fact) =>
+              personTaskProgress.person.id == fact.person.id
+                && personTaskProgress.taskPlan.id == fact.taskPlan.id
+                && fact.dtExecute.isSameDate(now)).length;
+        TaskFact taskFact = TaskFact(id: -1,
+            taskPlan: personTaskProgress.taskPlan,
+            person: _person,
+            dtPlan: personTaskProgress.dt,
+            dtExecute: now,
+            sum: sum,
+            status: TaskStatus.DONE.status,
+            cnt: taskFactCnt + 1);
+        int id = getIt<TaskFactData>().addEntity(taskFact);
+      } else {
+        _taskFactModiStatus(personTaskProgress, TaskStatus.DONE.status);
+      }
     } else {
-      List<TaskFact> data = getIt<TaskFactData>().getData();
-      TaskFact taskFact = data.where((element) => element.taskPlan == taskPlan && element.person == _person && element.dtPlan.isSameDate(dt)).first;
-      getIt<TaskFactData>().removeEntity(taskFact);
+      if (!isCreate) {
+        getIt<TaskFactData>().removeEntity(taskFacts.first);
+      }
+    }
+  }
+
+  void _taskFactModiSum(PersonTaskProgress personTaskProgress, int sum) {
+    List<TaskFact> data = getIt<TaskFactData>().getData();
+    List<TaskFact> taskFacts = data.where((element) => PersonTaskProgress.makeId(element) == personTaskProgress.id).toList();
+    if (taskFacts.isNotEmpty) {
+      taskFacts.first.sum = sum;
+      getIt<TaskFactData>().modifyEntity(taskFacts.first);
+    }
+  }
+
+  void _taskFactModiStatus(PersonTaskProgress personTaskProgress, int status) {
+    List<TaskFact> data = getIt<TaskFactData>().getData();
+    List<TaskFact> taskFacts = data.where((element) => PersonTaskProgress.makeId(element) == personTaskProgress.id).toList();
+    if (taskFacts.isNotEmpty) {
+      taskFacts.first.status = status;
+      getIt<TaskFactData>().modifyEntity(taskFacts.first);
     }
   }
 
@@ -216,5 +338,6 @@ class ParticipantTasksPageState extends State<ParticipantTasksPage> {
     }
     return Colors.red;
   }
+
 
 }

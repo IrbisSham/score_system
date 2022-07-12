@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:score_system/component/pie_diagram.dart';
 import 'package:score_system/main.dart';
 import 'package:score_system/screen/menu/bottom_menu.dart';
 import 'package:score_system/screen/participant_tasks_screen.dart';
@@ -27,13 +26,18 @@ class ParticipantsPageState extends State<ParticipantsPage> {
 
   late DateFormat dateFormat;
   late DateFormat timeFormat;
+  late final DateTime _dtBeg;
+  late final DateTime _dtEnd;
+
 
   @override
   void initState() {
     super.initState();
     dateFormat = new DateFormat.yMMMMd('ru');
     timeFormat = new DateFormat.Hms('ru');
-    bool _isShowAll = false;
+    final DateTime now = DateTime.now();
+    _dtBeg = DateTime(now.year, now.month, now.day);
+    _dtEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
   }
 
   @override
@@ -70,7 +74,7 @@ class ParticipantsPageState extends State<ParticipantsPage> {
             Expanded(child:
               ListView(
                 children:
-                  getIt<PersonService>().getAllPersonProgressGroupByPerson().map(
+                  getIt<PersonService>().getPersonProgress(null, _dtBeg, _dtEnd).values.map(
                         (personProgress) =>
                         Container(
                           width: MediaQuery.of(context).size.width,
@@ -92,6 +96,8 @@ class ParticipantsPageState extends State<ParticipantsPage> {
                                       ParticipantTasksPage.ROUTE_NAME,
                                       arguments: ParticipantTasksArguments(
                                         personProgress.person,
+                                        _dtBeg,
+                                        _dtEnd
                                       ),
                                     );
                                   },
@@ -118,30 +124,51 @@ class ParticipantsPageState extends State<ParticipantsPage> {
                                   width: MediaQuery.of(context).size.width / 3,
                                 // alignment: Alignment.center,
                                 // padding: EdgeInsets.only(bottom: 25, left: 20, right: 20),
-                                  child: Container(
-                                    // padding: EdgeInsets.only(left: 30),
-                                    alignment: Alignment.center,
-                                    child:
-                                    Text(
-                                      personProgress.person.nickName,
-                                      style: TextStyle(
-                                        fontSize: 26,
-                                        color: Theme.of(context).colorScheme.primary,
-                                        fontFamily: FONT_FAMILY_SECOND,
-                                      ),
-                                    ),
-                                  )
-                              ),
-                              Container(
-                                width: MediaQuery.of(context).size.width / 3,
-                                child: TaskStatPie(
-                                  dataMap: {
-                                    "Успешно" : personProgress.successProgress as double,
-                                    "Осталось" : (personProgress.allProgress - personProgress.successProgress) as double
-                                  },
-                                  title: "${personProgress.successProgress} из ${personProgress.allProgress}",
-                                  colorList: taskPieColorList
-                                ),
+                                  child: Column(
+                                      children: [
+                                        Container(
+                                          // padding: EdgeInsets.only(left: 30),
+                                          alignment: Alignment.center,
+                                          child:
+                                            Text(
+                                              personProgress.person.nickName,
+                                              style: TextStyle(
+                                                fontSize: 26,
+                                                color: Theme.of(context).colorScheme.primary,
+                                                fontFamily: FONT_FAMILY_SECOND,
+                                              ),
+                                            ),
+                                        ),
+                                        Container(
+                                          // padding: EdgeInsets.only(left: 30),
+                                          alignment: Alignment.center,
+                                          child:
+                                            personProgress == null ? Text("Нет данных") :
+                                            Text(
+                                              "Всего баллов: ${personProgress.sumAll}",
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Theme.of(context).colorScheme.secondary,
+                                                fontFamily: FONT_FAMILY_SECOND,
+                                              ),
+                                            ),
+                                        ),
+                                        Container(
+                                          // padding: EdgeInsets.only(left: 30),
+                                          alignment: Alignment.center,
+                                          child:
+                                            personProgress == null ? Text("Нет данных") :
+                                            Text(
+                                              "Сегодня: ${personProgress.sumLocal}",
+                                              style: TextStyle(
+                                                fontSize: 20,
+                                                color: Theme.of(context).colorScheme.secondary,
+                                                fontFamily: FONT_FAMILY_SECOND,
+                                              ),
+                                            ),
+                                        ),
+                                      ],
+                                    )
                               ),
                             ],
                           ),

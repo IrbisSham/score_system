@@ -11,30 +11,8 @@ import 'package:score_system/util/date_util.dart';
 import 'package:time_machine/time_machine.dart';
 
 import '../main.dart';
-
-class PersonProgress {
-  final Person person;
-  final List<Schedule> schedule;
-  final DateTime? datePlan;
-  final int successProgress;
-  final int allProgress;
-  PersonProgress({required Person person, required List<Schedule> schedule, DateTime? datePlan,
-      int successProgress = 0, int allProgress = 0}) :
-    this.person = person,
-    this.schedule = schedule,
-    this.datePlan = datePlan,
-    this.successProgress = successProgress,
-    this.allProgress = allProgress;
-}
-
-class PersonTaskProgress extends PersonProgress {
-  final int taskId;
-  PersonTaskProgress({required Person person, required List<Schedule> schedule, required int taskId, DateTime? dtPlan,
-      int successProgress = 0, int allProgress = 0}) :
-    this.taskId = taskId,
-    super(person: person, schedule: schedule, datePlan: dtPlan, successProgress: successProgress,
-          allProgress: allProgress);
-}
+import '../model/person_progress.dart';
+import '../model/person_task_progress.dart';
 
 class PersonTaskId {
   final Person person;
@@ -95,254 +73,9 @@ class TaskIdDateActivity {
 
 class PersonService {
 
-  List<PersonTaskProgress> getAllPersonProgress() {
-    List<PersonTaskProgress> rez = [];
-    /**
-     * Get all plan tasks
-     */
-    List<TaskPlan> plans = getIt<TaskPlanData>().getData();
-    /**
-     * Get all fact tasks
-     */
-    List<TaskFact> facts = getIt<TaskFactData>().getData();
-    /**
-     * Get all actual plan tasks progresses
-     */
-    List<PersonTaskProgress> personStatsPlan = plans
-        .where((plan) => plan.person != null && plan.status == STATUS_ACTUAL
-        )
-        .map((plan) =>
-          PersonTaskProgress(
-            person: plan.person,
-            taskId: plan.id,
-            schedule: plan.schedule,
-            allProgress: plan.schedule.map((sched) => sched.count > 1 ? sched.count : 1).reduce((value, element) => value + element)
-          )
-        ).toList();
-    /**
-     * Get all actual fact tasks progresses
-     */
-    List<PersonTaskProgress> personStatsFact = facts
-        .map((fact) =>
-          PersonTaskProgress(
-            dtPlan: fact.dtPlan,
-            person: fact.person,
-            taskId: fact.taskPlan.id,
-            schedule: fact.taskPlan.schedule,
-            successProgress: fact.taskPlan.person == fact.person && fact.status == TaskStatus.DONE.status ? 1 : 0,
-        )
-    ).toList();
-    /**
-     * Get all actual fact tasks progresses
-     */
-    rez = _getPersonTaskProgress(personStatsPlan, personStatsFact);
-    return rez;
-  }
-
-  List<PersonProgress> getAllPersonProgressGroupByPerson() {
-    List<PersonProgress> rez = [];
+  /// Get person progress. If person == null then get all persons progress. If dtBegin and dtEnd are empty then for all period
+  Map<Person, PersonProgress> getPersonProgress(Person? currentPerson, DateTime dtBegin, DateTime dtEnd) {
     Map<Person, PersonProgress> rezMap = {};
-    List<PersonTaskProgress> allPersonProgress = getAllPersonProgress();
-    allPersonProgress.forEach((element) {
-      PersonProgress? oldVal = rezMap[element.person];
-      if (oldVal == null) {
-        rezMap[element.person] =
-            PersonProgress(
-              person: element.person,
-              schedule: element.schedule,
-              successProgress: element.successProgress,
-              failProgress: element.failProgress,
-              allProgress: element.allProgress,
-            );
-      } else {
-        rezMap[element.person] =
-            PersonProgress(
-                person: element.person,
-                schedule: element.schedule,
-                successProgress: oldVal.successProgress + element.successProgress,
-                failProgress: oldVal.failProgress + element.failProgress,
-                allProgress: oldVal.allProgress + element.allProgress,
-            );
-      }
-    });
-    rez = rezMap.values.toList();
-    return rez;
-  }
-
-  List<PersonTaskProgress> _getPersonTaskProgress(List<PersonTaskProgress> personStatsPlan, List<PersonTaskProgress> personStatsFact) {
-    List<PersonTaskProgress> rez = [];
-    /**
-     * Get map of all tasks progresses
-     */
-    Map<PersonTaskId, int> allPersonProgress = new HashMap();
-    Map<PersonTaskId, int> failPersonProgress = new HashMap();
-    for (PersonTaskProgress personStatsPlanCur in personStatsPlan) {
-      PersonTaskId key = PersonTaskId(personStatsPlanCur.person, personStatsPlanCur.taskId, personStatsPlanCur.schedule, null);
-      /**
-       * Get all progresses
-       */
-      int oldVal = 0;
-      if (allPersonProgress.containsKey(key)) {
-        oldVal = allPersonProgress[key]!;
-      }
-      oldVal += personStatsPlanCur.allProgress;
-      allPersonProgress[key] = oldVal;
-      /**
-       * Get fail progresses
-       */
-      DateTime now = DateTime.now();
-      List<Schedule> schedules = key.schedule.where((sched) => sched.date.isBefore(now)).toList();
-      for (Schedule schedule in schedules) {
-        int count = personStatsFact.where((fact) => key.person == fact.person && key.taskId == fact.taskId && schedule.date.isSameDate(fact.datePlan!)).length;
-        if (count < schedule.count) {
-          oldVal = 0;
-          if (failPersonProgress.containsKey(key)) {
-            oldVal = failPersonProgress[key]!;
-          }
-          oldVal += schedule.count - count;
-          failPersonProgress[key] = oldVal;
-        }
-      }
-
-    }
-    /**
-     * Get map of all success tasks progresses
-     */
-    Map<PersonTaskId, int> successPersonProgress = new HashMap();
-    for (PersonTaskProgress personStatsFactCur in personStatsFact) {
-      PersonTaskId key = PersonTaskId(personStatsFactCur.person, personStatsFactCur.taskId, personStatsFactCur.schedule, null);
-      int oldVal = 0;
-      if (successPersonProgress.containsKey(key)) {
-        oldVal = successPersonProgress[key]!;
-      }
-      oldVal += personStatsFactCur.successProgress;
-      successPersonProgress[key] = oldVal;
-    }
-    /**
-     * Get collection of all merged tasks progresses
-     */
-    allPersonProgress.forEach((key, value) {
-      rez.add(
-        PersonTaskProgress(
-          person: key.person,
-          taskId: key.taskId,
-          allProgress: allPersonProgress[key] ?? 0,
-          successProgress: successPersonProgress[key] ?? 0,
-          failProgress: failPersonProgress[key] ?? 0,
-          schedule: key.schedule,
-        )
-      );
-    });
-    return rez;
-  }
-
-  List<PersonTaskProgress> getAllPersonProgressByDateInterval(DateTime dtBegin, DateTime dtEnd) {
-    List<PersonTaskProgress> rez = [];
-    /**
-     * Get all plan tasks
-     */
-    List<TaskPlan> plans = TaskPlanData().getData();
-    plans.forEach((plan) {
-      plan.schedule.sort((sched1, sched2) => sched1.date.compareTo(sched2.date));
-    });
-    /**
-     * Get all fact tasks
-     */
-    List<TaskFact> facts = TaskFactData().getData();
-    facts.sort((fact1, fact2) => fact1.dtPlan.compareTo(fact2.dtPlan));
-    /**
-     * Get all actual plan tasks progresses
-     */
-    List<PersonTaskProgress> personStatsPlan = plans
-        .where((plan) => plan.person != null && plan.status == STATUS_ACTUAL
-          && (DateInterval(LocalDate.dateTime(dtBegin), LocalDate.dateTime(dtEnd))
-                .intersection(DateInterval(LocalDate.dateTime(plan.schedule.first.date), LocalDate.dateTime(plan.schedule.last.date))) != null)
-        )
-        .map((plan) =>
-        PersonTaskProgress(
-            person: plan.person,
-            taskId: plan.id,
-            allProgress: plan.schedule.map((sched) => sched.count > 1 ? sched.count : 1).reduce((value, element) => value + element),
-            schedule: plan.schedule,
-        )
-    ).toList();
-    /**
-     * Get all actual fact tasks progresses
-     */
-    List<PersonTaskProgress> personStatsFact = facts
-        .where((fact) => fact.status == STATUS_ACTUAL &&  personStatsPlan.where((plan) => plan.taskId == fact.taskPlan.id).isNotEmpty
-        )
-        .map((fact) =>
-        PersonTaskProgress(
-            person: fact.person,
-            taskId: fact.id,
-            successProgress: fact.taskPlan.person == fact.person && fact.status == TaskStatus.DONE.status ? 1 : 0,
-            schedule: fact.taskPlan.schedule,
-        )
-    ).toList();
-    /**
-     * Get all actual fact tasks progresses
-     */
-    rez = _getPersonTaskProgress(personStatsPlan, personStatsFact);
-    return rez;
-  }
-
-  PersonTaskProgress getPersonProgressByDateInterval(Person person, DateTime dtBegin, DateTime dtEnd) {
-    List<PersonTaskProgress> rez = [];
-    /**
-     * Get all plan tasks
-     */
-    List<TaskPlan> plans = TaskPlanData().getData();
-    plans.forEach((plan) {
-      plan.schedule.sort((sched1, sched2) => sched1.date.compareTo(sched2.date));
-    });
-    /**
-     * Get all fact tasks
-     */
-    List<TaskFact> facts = TaskFactData().getData();
-    facts.sort((fact1, fact2) => fact1.dtPlan.compareTo(fact2.dtPlan));
-    /**
-     * Get all actual plan tasks progresses
-     */
-    List<PersonTaskProgress> personStatsPlan = plans
-        .where((plan) => plan.person == person && plan.status == STATUS_ACTUAL
-        && (DateInterval(LocalDate.dateTime(dtBegin), LocalDate.dateTime(dtEnd))
-            .intersection(DateInterval(LocalDate.dateTime(plan.schedule.first.date), LocalDate.dateTime(plan.schedule.last.date))) != null)
-    )
-        .map((plan) =>
-        PersonTaskProgress(
-          person: plan.person,
-          taskId: plan.id,
-          allProgress: plan.schedule.map((sched) => sched.count > 1 ? sched.count : 1).reduce((value, element) => value + element),
-          schedule: plan.schedule,
-        )
-    ).toList();
-    /**
-     * Get all actual fact tasks progresses
-     */
-    List<PersonTaskProgress> personStatsFact = facts
-        .where((fact) => fact.status == STATUS_ACTUAL && fact.taskPlan.person == person &&  personStatsPlan.where((plan) => plan.taskId == fact.taskPlan.id).isNotEmpty
-    )
-        .map((fact) =>
-        PersonTaskProgress(
-          person: fact.person,
-          taskId: fact.id,
-          successProgress: fact.taskPlan.person == fact.person && fact.status == TaskStatus.DONE.status ? 1 : 0,
-          schedule: fact.taskPlan.schedule,
-        )
-    ).toList();
-    /**
-     * Get all actual fact tasks progresses
-     */
-    rez = _getPersonTaskProgress(personStatsPlan, personStatsFact);
-    if (rez.isEmpty) {
-      rez.add(PersonTaskProgress(person: person, taskId: 0, successProgress: 0, failProgress: 0, allProgress: 0, schedule: []));
-    }
-    return rez.first;
-  }
-
-  Map<TaskIdDateActivity, Tuple2<int, int>> getActualPersonProgressByDate(Person person, DateTime curDate) {
-    Map<TaskIdDateActivity, Tuple2<int, int>> rez = {};
     /**
      * Get all plan tasks
      */
@@ -354,42 +87,79 @@ class PersonService {
     /**
      * Get all actual plan tasks progresses
      */
-    Map<TaskIdDateActivity, int> planProgress = HashMap();
-    plans.where((plan) => plan.person == person && plan.status == STATUS_ACTUAL
-        && plan.schedule
-            .where((sched) => sched.date.isSameDate(curDate)).length > 0
-      ).forEach((plan) {
-        plan.schedule.forEach((schedule) {
-          if (schedule.date.isSameDate(curDate)) {
-            planProgress[TaskIdDateActivity(plan.id, plan.activity, schedule.date)] = schedule.count;
-          }
+    plans
+        .where((plan) => currentPerson == null ? 1==1 : plan.person == currentPerson)
+        .forEach((plan) {
+          facts.where((fact) => plan.person == fact.person && plan.id == fact.taskPlan.id)
+              .forEach((fact) {
+                PersonProgress? oldVal = rezMap[fact.person];
+                if (oldVal == null) {
+                  rezMap[fact.person] = PersonProgress(person: fact.person,
+                      sumAll: fact.sum,
+                      sumLocal: (fact.dtExecute.isAfter(dtBegin) || fact.dtExecute.isAtSameMomentAs(dtBegin)) && (fact.dtExecute.isBefore(dtEnd) || fact.dtExecute.isAtSameMomentAs(dtEnd) ) ? fact.sum : 0
+                  );
+                } else {
+                  rezMap[fact.person] = PersonProgress(
+                      person: fact.person,
+                      sumAll: oldVal.sumAll + fact.sum,
+                      sumLocal: (fact.dtExecute.isAfter(dtBegin) || fact.dtExecute.isAtSameMomentAs(dtBegin)) && (fact.dtExecute.isBefore(dtEnd)  || fact.dtExecute.isAtSameMomentAs(dtEnd)) ? fact.sum : 0
+                  );
+                }
+              });
         });
-      });
+    return rezMap;
+  }
+
+  /// Get person progress. If person == null then get all persons progress
+  Map<Person, List<PersonTaskProgress>> getPersonTaskProgress(Person? currentPerson, DateTime dtBegin, DateTime dtEnd) {
+    Map<Person, List<PersonTaskProgress>> rezMap = {};
     /**
-     * Get all actual fact tasks progresses
+     * Get all plan tasks
      */
-    List<Map<TaskIdDateActivity, int>> factProgress = facts
-        .where((fact) => fact.taskPlan.person == person && fact.status != TaskStatus.INVALID.status && fact.dtPlan.isSameDate(curDate))
-        .map((fact) {
-          TaskIdDateActivity taskIdActivity = TaskIdDateActivity(fact.taskPlan.id, fact.taskPlan.activity, fact.dtPlan);
-          Map<TaskIdDateActivity, int> map = HashMap();
-          map[taskIdActivity] = fact.status == TaskStatus.DONE.status ? 1 : 0;
-          return map;
-        }
-    ).toList();
-    factProgress.forEach((fact) {
-      fact.forEach((key, value) {
-        Tuple2<int, int> oldVal = Tuple2(0, 0);
-        if (rez[key] != null) {
-          oldVal = rez[key]!;
-        }
-        rez[key] = Tuple2(planProgress[key]!, oldVal.item2 + value);
-      });
-    });
-    if (rez.isEmpty) {
-      rez[TaskIdDateActivity(0, Activity(id: 0, name: "Ничего"), curDate)] = Tuple2(0, 0);
-    }
-    return rez;
+    List<TaskPlan> plans = getIt<TaskPlanData>().getData();
+    /**
+     * Get all fact tasks
+     */
+    List<TaskFact> facts = getIt<TaskFactData>().getData();
+    /**
+     * Get all actual plan tasks progresses
+     */
+    plans
+        .where((plan) => (currentPerson == null ? 1==1 : plan.person == currentPerson)
+              )
+        .forEach((plan) {
+            plan.schedule.sort((plan1, plan2) {
+              return plan1.date.compareTo(plan2.date);
+            });
+            plan.schedule.where((sched) => (sched.date.isAfter(dtBegin) || sched.date.isAtSameMomentAs(dtBegin)) && (sched.date.isBefore(dtEnd) || sched.date.isAtSameMomentAs(dtEnd))).forEach((sched) {
+              List<TaskFact> factsSucc = facts.where((fact) => plan.person == fact.person && plan.id == fact.taskPlan.id
+                  && (fact.dtExecute.isAfter(dtBegin) || fact.dtExecute.isAtSameMomentAs(dtBegin)) && (fact.dtExecute.isBefore(dtEnd) || fact.dtExecute.isAtSameMomentAs(dtEnd)) )
+                  .toList();
+              factsSucc.sort((fact1, fact2) {
+                return fact1.dtExecute.compareTo(fact2.dtExecute);
+              });
+              Person personCurr = factsSucc.isNotEmpty ? factsSucc.first.person : plan.person;
+              for( var i = 1 ; i <= sched.count; i++ ) {
+                List<PersonTaskProgress>? oldVal = rezMap[personCurr];
+                PersonTaskProgress personTaskProgress = PersonTaskProgress(
+                  id: '${currentPerson?.id}_${plan.id}_${sched.date}_$i',
+                  person: personCurr,
+                  taskPlan: plan,
+                  activity: plan.activity,
+                  dt: factsSucc.isNotEmpty ? (i <= factsSucc.length ? factsSucc[i - 1].dtExecute : sched.date) : sched.date,
+                  sum: factsSucc.isNotEmpty ? (i <= factsSucc.length ? factsSucc[i - 1].sum : plan.activity.sum) : plan.activity.sum,
+                  status: factsSucc.isNotEmpty ? (i <= factsSucc.length ? TaskStatus.DONE : TaskStatus.NONE) : TaskStatus.NONE,
+                );
+                if (oldVal == null || oldVal.isEmpty) {
+                  rezMap[personCurr] = [personTaskProgress];
+                } else {
+                  oldVal.add(personTaskProgress);
+                  rezMap[personCurr] = oldVal;
+                }
+              }
+          });
+        });
+    return rezMap;
   }
 
 }

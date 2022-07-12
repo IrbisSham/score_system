@@ -9,14 +9,12 @@ class TaskPlan extends HierarchEntity {
   late Activity activity;
   late List<Schedule> schedule;
   late Person person;
-  int sum = 0;
 
   TaskPlan({required int id, required Activity activity, String? name, String? desc, int status = 0,
-    required List<Schedule> schedule, required Person person, int sum = 0}) :
+    required List<Schedule> schedule, required Person person}) :
         this.activity = activity,
         this.schedule = schedule,
         this.person = person,
-        this.sum = sum,
         super(id: id, name: name, desc: desc, status: status);
 
   Map<String,dynamic> toMap(){ // used when inserting data to the database
@@ -27,7 +25,6 @@ class TaskPlan extends HierarchEntity {
       "desc" : desc,
       "schedule" : schedule,
       "person" : person,
-      "sum" : sum,
     };
   }
 
@@ -35,7 +32,6 @@ class TaskPlan extends HierarchEntity {
     this.activity = obj['activity'];
     this.schedule = obj['schedule'];
     this.person = obj['person'];
-    this.sum = obj['sum'];
   }
 
   @override
@@ -48,8 +44,7 @@ class TaskPlan extends HierarchEntity {
               && desc == other.desc
               && status == other.status
               && schedule == other.schedule
-              && person == other.person
-              && sum == other.sum;
+              && person == other.person;
 
   @override
   int get hashCode {
@@ -60,31 +55,32 @@ class TaskPlan extends HierarchEntity {
     result = 37 * result + status.hashCode;
     result = 37 * result + schedule.hashCode;
     result = 37 * result + person.hashCode;
-    result = 37 * result + sum.hashCode;
     return result;
   }
 
 }
 
-/// Status: 10 - none, 0 - done, -1 - fail, 3 - ill, 5 - other
+/// 0 - empty, 1 - done, -1 - invalid, 3 - fail, 5 - ill, 7 - friend, 9 - other
 enum TaskStatus {
   NONE,
   DONE,
   INVALID,
   FAIL,
   ILL,
+  FRIEND,
   OTHER,
 }
 
 extension TaskStatusExtension on TaskStatus {
 
   static const statuses = {
-    TaskStatus.NONE: Tuple2(10, 'Пусто'),
-    TaskStatus.DONE: Tuple2(0, 'Сделано'),
+    TaskStatus.NONE: Tuple2(0, 'Пусто'),
+    TaskStatus.DONE: Tuple2(1, 'Сделано'),
     TaskStatus.INVALID: Tuple2(-1, 'Ошибочное'),
     TaskStatus.FAIL: Tuple2(3, 'Провал'),
     TaskStatus.ILL: Tuple2(5, 'Болезнь'),
-    TaskStatus.OTHER: Tuple2(7, 'Друг'),
+    TaskStatus.FRIEND: Tuple2(7, 'Друг'),
+    TaskStatus.OTHER: Tuple2(9, 'Иное'),
   };
 
   int get status => statuses[this]!.item1;
@@ -93,19 +89,23 @@ extension TaskStatusExtension on TaskStatus {
 
 }
 
-/// Status: 0 - done, -1 - invalid, 3 - fail, 5 - ill, 7 - other
+/// Status: 0 - empty, 1 - done, -1 - invalid, 3 - fail, 5 - ill, 7 - other
 class TaskFact extends HierarchEntity {
   late TaskPlan taskPlan;
   late Person person;
   late DateTime dtPlan;
   late DateTime dtExecute;
+  late int cnt;
+  late int sum;
 
   TaskFact({required int id, String? name, String? desc, String? parentIdList, int status = 0,
-    required TaskPlan taskPlan, required Person person, required DateTime dtPlan, required DateTime dtExecute}) :
+    required TaskPlan taskPlan, required Person person, required DateTime dtPlan, required DateTime dtExecute, required int cnt, required int sum}) :
         this.taskPlan = taskPlan,
         this.person = person,
         this.dtPlan = dtPlan,
         this.dtExecute = dtExecute,
+        this.cnt = cnt,
+        this.sum = sum,
         super(id: id, name: name, desc: desc, parentIdList: parentIdList, status: status);
 
   Map<String,dynamic> toMap(){ // used when inserting data to the database
@@ -117,6 +117,8 @@ class TaskFact extends HierarchEntity {
       "person" : person,
       "dtPlan" : dtPlan,
       "dtExecute" : dtExecute,
+      "cnt" : cnt,
+      "sum" : sum,
     };
   }
 
@@ -125,6 +127,8 @@ class TaskFact extends HierarchEntity {
     this.person = obj['person'];
     this.dtPlan = obj['dtPlan'];
     this.dtExecute = obj['dtExecute'];
+    this.cnt = obj['cnt'];
+    this.sum = obj['sum'];
   }
 
   @override
@@ -138,7 +142,9 @@ class TaskFact extends HierarchEntity {
               && taskPlan == other.taskPlan
               && person == other.person
               && dtPlan == other.dtPlan
-              && dtExecute == other.dtExecute;
+              && dtExecute == other.dtExecute
+              && cnt == other.cnt
+              && sum == other.sum;
 
   @override
   int get hashCode {
@@ -150,6 +156,8 @@ class TaskFact extends HierarchEntity {
     result = 37 * result + person.hashCode;
     result = 37 * result + dtPlan.hashCode;
     result = 37 * result + dtExecute.hashCode;
+    result = 37 * result + cnt.hashCode;
+    result = 37 * result + sum.hashCode;
     return result;
   }
 

@@ -20,7 +20,6 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
   List<TaskPlan> _localData = [
     TaskPlan(
       id: 1,
-      sum: 2,
       activity: Activity(
         id: 14,
         name: 'Сделать зарядку',
@@ -29,13 +28,8 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       ),
       schedule: [
         Schedule(
-          date: DateTime(2022, 3, 5),
-        ),
-        Schedule(
-          date: DateTime(2022, 3, 8),
-        ),
-        Schedule(
-          date: DateTime(2022, 3, 9),
+          date: DateTime(2022, 7, 13),
+          count: 3,
         ),
       ],
       person: Person(
@@ -48,7 +42,6 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
     ),
     TaskPlan(
       id: 2,
-      sum: 3,
       activity: Activity(
         id: 15,
         name: 'Протереть мебель',
@@ -57,10 +50,10 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       ),
       schedule: [
         Schedule(
-          date: DateTime(2022, 3, 4),
+          date: DateTime(2022, 7, 13),
         ),
         Schedule(
-          date: DateTime(2022, 3, 2),
+          date: DateTime(2022, 7, 13),
         ),
       ],
       person: Person(
@@ -73,7 +66,6 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
     ),
     TaskPlan(
       id: 3,
-      sum: 4,
       activity: Activity(
         id: 16,
         name: 'Глажка',
@@ -89,13 +81,12 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       ),
       schedule: [
         Schedule(
-          date: DateTime(2022, 3, 5),
+          date: DateTime(2022, 7, 13),
         ),
       ],
     ),
     TaskPlan(
       id: 4,
-      sum: 1,
       activity: Activity(
         id: 17,
         name: 'Заправить кровать',
@@ -111,16 +102,14 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       ),
       schedule: [
         Schedule(
-          date: DateTime(2022, 3, 4),
+          date: DateTime(2022, 7, 13),
+          count: 3,
         ),
-        Schedule(
-          date: DateTime(2022, 3, 2),
-        ),
+
       ],
     ),
     TaskPlan(
       id: 5,
-      sum: 2,
       activity: Activity(
         id: 18,
         name: 'Вынести мусор',
@@ -136,16 +125,15 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       ),
       schedule: [
         Schedule(
-          date: DateTime(2022, 3, 4),
+          date: DateTime(2022, 7, 13),
         ),
         Schedule(
-          date: DateTime(2022, 3, 2),
+          date: DateTime(2022, 7, 13),
         ),
       ],
     ),
     TaskPlan(
       id: 6,
-      sum: 4,
       activity: Activity(
         id: 19,
         name: 'Приготовить еду',
@@ -161,10 +149,10 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       ),
       schedule: [
         Schedule(
-          date: DateTime(2022, 3, 4),
+          date: DateTime(2022, 7, 13),
         ),
         Schedule(
-          date: DateTime(2022, 3, 2),
+          date: DateTime(2022, 7, 13),
         ),
       ],
     ),
@@ -211,7 +199,6 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       name: map['name'] as String,
       status: map['status'] as int,
       desc: map['desc'] as String,
-      sum: map['sum'] as int,
       activity: Activity(
         id: map['Activity_id'] as int,
         name: map['Activity_name'] as String,
@@ -281,13 +268,13 @@ class TaskFactData extends EntitiesData<TaskFact>{
         ),
         schedule: [
           Schedule(
-            date: DateTime(2022, 3, 5),
+            date: DateTime(2022, 7, 13),
           ),
           Schedule(
-            date: DateTime(2022, 3, 8),
+            date: DateTime(2022, 7, 13),
           ),
           Schedule(
-            date: DateTime(2022, 3, 9),
+            date: DateTime(2022, 7, 13),
           ),
         ],
         person: Person(
@@ -305,8 +292,9 @@ class TaskFactData extends EntitiesData<TaskFact>{
         fatherName: 'Юрьевич',
         avaPath: AVA_PATH + "Vitaliy.png",
       ),
-      dtPlan: DateTime(2022, 3, 5),
-      dtExecute: DateTime(2022, 3, 2),
+      dtPlan: DateTime(2022, 7, 13),
+      dtExecute: DateTime(2022, 7, 13),
+      sum: 2, cnt: 1,
     ),
     TaskFact(
       id: 2,
@@ -320,10 +308,10 @@ class TaskFactData extends EntitiesData<TaskFact>{
         ),
         schedule: [
           Schedule(
-            date: DateTime(2022, 3, 4),
+            date: DateTime(2022, 7, 13),
           ),
           Schedule(
-            date: DateTime(2022, 3, 2),
+            date: DateTime(2022, 7, 13),
           ),
         ],
         person: Person(
@@ -341,8 +329,10 @@ class TaskFactData extends EntitiesData<TaskFact>{
         fatherName: 'Юрьевич',
         avaPath: AVA_PATH + "Vitaliy.png",
       ),
-      dtPlan: DateTime(2022, 3, 3),
-      dtExecute: DateTime(2022, 3, 3),
+      dtPlan: DateTime(2022, 7, 13),
+      dtExecute: DateTime(2022, 7, 13),
+      sum: 2,
+      cnt: 1,
     ),
     TaskFact(
       id: 3,
@@ -363,7 +353,7 @@ class TaskFactData extends EntitiesData<TaskFact>{
         ),
         schedule: [
           Schedule(
-            date: DateTime(2022, 3, 5),
+            date: DateTime(2022, 7, 13),
           ),
         ],
       ),
@@ -374,8 +364,9 @@ class TaskFactData extends EntitiesData<TaskFact>{
         fatherName: 'Евгеньевна',
         avaPath: AVA_PATH + "Kate.png",
       ),
-      dtPlan: DateTime(2022, 3, 4),
-      dtExecute: DateTime(2022, 3, 4),
+      dtPlan: DateTime(2022, 7, 13),
+      dtExecute: DateTime(2022, 7, 13),
+      sum: 2, cnt: 1,
     ),
     TaskFact(
       id: 4,
@@ -389,10 +380,10 @@ class TaskFactData extends EntitiesData<TaskFact>{
         ),
         schedule: [
           Schedule(
-            date: DateTime(2022, 3, 4),
+            date: DateTime(2022, 7, 13),
           ),
           Schedule(
-            date: DateTime(2022, 3, 2),
+            date: DateTime(2022, 7, 13),
           ),
         ],
         person: Person(
@@ -410,8 +401,10 @@ class TaskFactData extends EntitiesData<TaskFact>{
         fatherName: 'Юрьевич',
         avaPath: AVA_PATH + "Vitaliy.png",
       ),
-      dtPlan: DateTime(2022, 3, 4),
-      dtExecute: DateTime(2022, 3, 4),
+      dtPlan: DateTime(2022, 7, 13),
+      dtExecute: DateTime(2022, 7, 13),
+      sum: 2,
+      cnt: 1,
     ),
   ];
 
@@ -476,6 +469,8 @@ class TaskFactData extends EntitiesData<TaskFact>{
           avaPath: map['Person_avaPath'] as String,
         ),
         taskPlan: getIt<TaskPlanData>().getEntity(map['${getIt<TaskPlanData>().getTableName()}_id'] as int),
+        sum: map['sum'] as int,
+        cnt: map['cnt'] as int,
     );
   }
 

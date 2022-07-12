@@ -10,9 +10,10 @@ extension DateOnlyCompare on DateTime {
 
 class DateUtil {
 
+  static final DateFormat DATE_FORMATTER = DateFormat('dd MMMM, EEEE', LOCALE_LANG);
+
   String getDateNowInStr() {
     final DateTime now = DateTime.now();
-    final DateFormat formatter = DateFormat('dd MMMM, EEEE', LOCALE_LANG);
-    return formatter.format(now);
+    return DATE_FORMATTER.format(now);
   }
 }
