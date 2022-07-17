@@ -1,6 +1,6 @@
 # ball_system
 
-Ball System Flutter project.
+Score System Flutter project.
 
 ## Getting Started
 
