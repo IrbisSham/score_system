@@ -11,6 +11,8 @@ class ActivityChoosePage extends StatefulWidget {
   Activity? _activity;
   final List<Activity> _srcActivity;
 
+  static final String ROUTE_NAME = '/board';
+
   ActivityChoosePage(this._ctx, this._activity, this._srcActivity);
 
   @override

@@ -145,7 +145,7 @@ class MyApp extends StatelessWidget {
               //       'results_month': 'Результаты \n за \n месяц',
               //     }
               // ),
-              initialRoute: ParticipantsPage.ROUTE_NAME,
+              initialRoute: ActivityChoosePage.ROUTE_NAME,
               routes: {
                 '/choose_user': (context) => MainMenuPage(
                     title: 'Выберите трудягу',
@@ -169,7 +169,7 @@ class MyApp extends StatelessWidget {
                 '/wiki/errors': (context) => WikiErrorsPage(),
                 '/wiki/how_pause': (context) => WikiHowPausePage(),
                 '/wiki/long_results': (context) => WikiLongResultsPage(),
-                '/board': (context) => ActivityChoosePage(context, null, ActivityData().getData()),
+                ActivityChoosePage.ROUTE_NAME: (context) => ActivityChoosePage(context, null, ActivityData().getData()),
               }
           );
         }
