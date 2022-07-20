@@ -5,6 +5,8 @@ import 'package:score_system/model/activity.dart';
 import 'package:score_system/model/entity.dart';
 import 'package:score_system/screen/board_screen.dart';
 
+import '../main.dart';
+
 class ActivityChoosePage extends StatefulWidget {
 
   BuildContext _ctx;
@@ -24,9 +26,9 @@ class _ActivityChoosePageState extends State<ActivityChoosePage> {
   Widget btnsByActivity({required BuildContext context, Activity? activity, required List<Activity> srcActivity}) {
     List<Activity>? childrenActivities;
     if (activity == null) {
-      childrenActivities = HierarchEntityUtil<Activity>().getTopData(srcActivity);
+      childrenActivities = getIt<HierarchEntityUtil>().getTopData(srcActivity).cast<Activity>();
     } else {
-      childrenActivities = HierarchEntityUtil<Activity>().getChildrenData(activity, srcActivity);
+      childrenActivities = getIt<HierarchEntityUtil>().getChildrenData(activity, srcActivity).cast<Activity>();
     }
     if (childrenActivities.isEmpty) {
       return BoardPage(activity!);

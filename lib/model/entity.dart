@@ -1,4 +1,5 @@
 import 'package:score_system/vocabulary/constant.dart';
+import 'package:tuple/tuple.dart';
 
 class BaseEntity {
   late int id;
@@ -57,12 +58,23 @@ class HierarchEntity extends BaseEntity {
 
 class HierarchEntityUtil<T extends HierarchEntity> {
 
+  List<T> getTopData(List<T> srcList) {
+    return srcList.where((element) => element.parentIdList == null || element.parentIdList!.isEmpty).toList();
+  }
+
   List<T> getChildrenData(T entity, List<T> srcList) {
     return srcList.where((element) => element.parentIdList != null && element.parentIdList!.split(STRING_DELIMETER).map((e) => int.parse(e)).contains(entity.id)).toList();
   }
 
-  List<T> getTopData(List<T> srcList) {
-    return srcList.where((element) => element.parentIdList == null || element.parentIdList!.isEmpty).toList();
+  List<Tuple2<T, List<T>>> getTopDataWithChildren(List<T> srcList) {
+    List<T> categories = srcList.where((element) => element.parentIdList == null || element.parentIdList!.isEmpty).toList();
+    return categories
+      .map((category) {
+        List<T> children = srcList.where((element) => element.parentIdList != null && element.parentIdList!.split(STRING_DELIMETER).map((e) => int.parse(e)).contains(category.id)).toList();
+        return Tuple2(category, children);
+        }
+      )
+      .toList();
   }
 
 }

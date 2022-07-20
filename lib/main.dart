@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:score_system/data/dbprovider.dart';
+import 'package:score_system/model/activity.dart';
 import 'package:score_system/screen/activity_choose_screen.dart';
 import 'package:score_system/screen/main_menu_screen.dart';
+import 'package:score_system/screen/participant_add_tasks_screen.dart';
 import 'package:score_system/screen/participant_tasks_screen.dart';
 import 'package:score_system/screen/participants_screen.dart';
 import 'package:score_system/screen/wiki/aims_screen.dart';
@@ -21,6 +23,9 @@ import 'package:score_system/vocabulary/activity_data.dart';
 import 'package:score_system/vocabulary/person_data.dart';
 import 'package:loggy/loggy.dart';
 import 'package:score_system/vocabulary/task_data.dart';
+
+import 'model/entity.dart';
+import 'model/person.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -46,14 +51,20 @@ void setup() {
   getIt.registerSingleton<PersonData>(PersonData());
   getIt.registerSingleton<TaskPlanData>(TaskPlanData());
   getIt.registerSingleton<TaskFactData>(TaskFactData());
+  getIt.registerSingleton<HierarchEntityUtil>(HierarchEntityUtil());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+
+  Person? _person;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    if (_person == null) {
+      List<Person> persons = getIt<PersonData>().getData();
+      _person = persons.isEmpty ? null : persons.first;
+    }
     return FutureBuilder(
       future: Init.instance.initialize(),
       builder: (context, AsyncSnapshot snapshot) {
@@ -145,14 +156,20 @@ class MyApp extends StatelessWidget {
               //       'results_month': 'Результаты \n за \n месяц',
               //     }
               // ),
-              initialRoute: ActivityChoosePage.ROUTE_NAME,
+              initialRoute: AddParticipantTasksPage.ROUTE_NAME,
               routes: {
                 '/choose_user': (context) => MainMenuPage(
                     title: 'Выберите трудягу',
-                    btnTitleMap: Map.fromIterable(PersonData().getData(), key: (person) => person.fio(), value: (person) => '/person')
+                    btnTitleMap: Map.fromIterable(getIt<PersonData>().getData(), key: (person) => person.fio(), value: (person) => '/person')
                 ),
                 ParticipantsPage.ROUTE_NAME: (context) => ParticipantsPage(),
                 ParticipantTasksPage.ROUTE_NAME: (context) => ParticipantTasksPage(),
+                AddParticipantTasksPage.ROUTE_NAME: (context) =>
+                  AddParticipantTasksPage(
+                    context,
+                    _person,
+                    getIt<ActivityData>().getData()
+                  ),
                 '/person': (context) => MainMenuPage(
                     title: 'Бальная система',
                     btnTitleMap: {
@@ -169,13 +186,14 @@ class MyApp extends StatelessWidget {
                 '/wiki/errors': (context) => WikiErrorsPage(),
                 '/wiki/how_pause': (context) => WikiHowPausePage(),
                 '/wiki/long_results': (context) => WikiLongResultsPage(),
-                ActivityChoosePage.ROUTE_NAME: (context) => ActivityChoosePage(context, null, ActivityData().getData()),
+                ActivityChoosePage.ROUTE_NAME: (context) => ActivityChoosePage(context, null, getIt<ActivityData>().getData()),
               }
           );
         }
       // },
     );
   }
+
 }
 
 class Splash extends StatelessWidget {

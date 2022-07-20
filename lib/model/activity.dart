@@ -56,3 +56,5 @@ class Activity extends HierarchEntity{
 
 }
 
+Activity activityDummy = Activity(id: 0, name: 'Dummy');
+

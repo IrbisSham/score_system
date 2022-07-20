@@ -1,28 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:score_system/model/entity.dart';
 import 'package:score_system/model/person.dart';
-import 'package:score_system/model/person_progress.dart';
 import 'package:score_system/model/task.dart';
 import 'package:score_system/screen/menu/bottom_menu.dart';
-import 'package:score_system/service/person_service.dart';
 import 'package:score_system/util/date_util.dart';
 import 'package:score_system/vocabulary/constant.dart';
 import 'package:score_system/vocabulary/task_data.dart';
+import 'package:tuple/tuple.dart';
 
 import '../main.dart';
+import '../model/activity.dart';
 import '../model/person_task_progress.dart';
-
-class AddParticipantTasksArguments {
-  final Person _person;
-  AddParticipantTasksArguments(this._person);
-}
+import '../vocabulary/person_data.dart';
 
 class AddParticipantTasksPage extends StatefulWidget {
+
+  late BuildContext _ctx;
+  late Person? _person;
+  late Person person;
+  late List<Activity> _activities;
+  late Activity _activitySelected;
 
   final String participantsTitle = "Поставьте участнику новую задачу";
   static final String ROUTE_NAME = '/participant_add_tasks';
 
-  const AddParticipantTasksPage({Key? key}) : super(key: key);
+  AddParticipantTasksPage(BuildContext context, Person? person, List<Activity> activities){
+    this._ctx = context;
+    if (person == null) {
+      List<Person> persons = getIt<PersonData>().getData();
+      _person = persons.isEmpty ? null : persons.first;
+    } else {
+      _person = person;
+    }
+    this._person = person;
+    this._ctx = context;
+  }
 
   @override
   State<StatefulWidget> createState() => _AddParticipantTasksPageState();
@@ -31,7 +44,6 @@ class AddParticipantTasksPage extends StatefulWidget {
 
 class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
   late TextEditingController searchController;
-  late Person _person;
   String _searchString = "";
   int selectedIndex = 2;
 
@@ -47,106 +59,137 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as AddParticipantTasksArguments;
-    _person = args._person;
+    if (this.widget._person == null) {
+      return Scaffold(
+          body: SimpleDialog(title: Text('Не выбран участник!'))
+      );
+    } else {
+      this.widget.person = this.widget._person!;
+    }
     searchController = TextEditingController(text: _searchString);
     // Start listening to changes.
     searchController.addListener(() => _refreshActivities(searchController.text));
+    List<Tuple2<Activity, List<Activity>>> categoriesWithActivities = getIt<HierarchEntityUtil>().getTopDataWithChildren(this.widget._activities).cast<Tuple2<Activity, List<Activity>>>();
+    categoriesWithActivities.add(Tuple2(activityDummy, List.empty()));
     return Scaffold(
       appBar: AppBar(
         title: Container(
           alignment: Alignment.center,
           child: Text(
-            _person.fio(),
+            this.widget.person.fio(),
             style: TextStyle(fontSize: 18),
           ),
         ),
       ),
       body:
-      Row(
-          children: [
-            Column(
-              children: [
-                Container(
-                  child:
-                    Text(
-                      'Фильтр по словоформе'
-                    ),
-                  width: MediaQuery.of(context).size.width / 5,
-                ),
-                Container(
-                  child:
-                    TextField(
-                      controller: searchController,
-                      keyboardType: TextInputType.text,
-                      inputFormatters: [FilteringTextInputFormatter.singleLineFormatter], // Only numbers can be entered
-                    ),
-                  width: MediaQuery.of(context).size.width * 4 / 5,
-                ),
-              ],
-            )
-
-
-            ),
-            Container(
-              padding: EdgeInsets.only(top: 20, bottom: 20),
-              child:
-              Row(
-                mainAxisSize: MainAxisSize.max,
-                // crossAxisAlignment: CrossAxisAlignment.end,
+        Row(
+            children: [
+              Column(
                 children: [
                   Container(
-                    width: MediaQuery.of(context).size.width / 5,
-                    // alignment: Alignment.center,
                     child:
-                    CircleAvatar(
-                      backgroundColor: Colors.white,
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(50),
-                          child:
-                          _person.avaPath != null ?
-                          Image.asset(
-                            _person.avaPath!,
-                          ) : Icon(Icons.person, color: Theme.of(context).colorScheme.primary)
+                      Text(
+                        'Фильтр по словоформе'
                       ),
-                      radius: 52,
-                    ),
+                    width: MediaQuery.of(context).size.width / 5,
                   ),
                   Container(
-                      width: MediaQuery.of(context).size.width / 5,
-                      // alignment: Alignment.center,
-                      // padding: EdgeInsets.only(bottom: 25, left: 20, right: 20),
-                      child: Container(
-                        // padding: EdgeInsets.only(left: 30),
-                        alignment: Alignment.center,
-                        child:
-                        Text(
-                          getIt<DateUtil>().getDateNowInStr(),
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontFamily: FONT_FAMILY_SECOND,
-                          ),
-                        ),
-                      )
+                    child:
+                      TextField(
+                        controller: searchController,
+                        keyboardType: TextInputType.text,
+                        inputFormatters: [FilteringTextInputFormatter.singleLineFormatter], // Only numbers can be entered
+                      ),
+                    width: MediaQuery.of(context).size.width * 4 / 5,
                   ),
-                  Column(children: [
-                    Container(
-
-                    ),
-                    Container(
-
-                    ),
-                  ],)
                 ],
               ),
-            ),
-          ]
-      ),
-      // );
-      // }),
+              Container(
+                height: MediaQuery.of(context).size.height - 130,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                child:
+                  Row(
+                    children:
+                      <Widget>[
+                        ...categoriesWithActivities.map( (categoryWithActivities) =>
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: EdgeInsets.symmetric(vertical: 20),
+                                    child:
+                                      Text(
+                                        categoryWithActivities.item1.name!,
+                                        textAlign: TextAlign.left,
+                                        style:
+                                        TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 32,
+                                        ),
+                                      ),
+                                  ),
+                                  Container(
+                                    height: MediaQuery.of(context).size.height / 5,
+                                    child:
+                                    SingleChildScrollView(
+                                      child: GridView.builder(
+                                          shrinkWrap: true,
+                                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                                              maxCrossAxisExtent: MediaQuery.of(context).size.width / 4,
+                                              // childAspectRatio: 4,
+                                              // crossAxisSpacing: 0,
+                                              mainAxisSpacing: 20),
+                                          itemCount: categoryWithActivities.item2.length,
+                                          itemBuilder: (BuildContext ctx, index) {
+                                            return GestureDetector(
+                                                onTap: (){
+                                                  setState(() {
+                                                    this.widget._activitySelected = categoryWithActivities.item2[index];
+                                                    this.widget._ctx = context;
+                                                  });
+                                                },
+                                                child: Container(
+                                                    alignment: Alignment.center,
+                                                    child:
+                                                    SingleChildScrollView(
+                                                      child:
+                                                        Container(
+                                                          alignment: Alignment.center,
+                                                          height: 130,
+                                                          width: MediaQuery.of(context).size.width / 2,
+                                                          padding: EdgeInsets.only(bottom: 30),
+                                                          child : FittedBox(
+                                                            fit: BoxFit.fill,
+                                                            child: Text(
+                                                              categoryWithActivities.item2[index].name!,
+                                                              textAlign: TextAlign.center,
+                                                              style: TextStyle(
+                                                                color: Colors.white,
+                                                                fontSize: 32,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          decoration: BoxDecoration(
+                                                            color: Colors.primaries[index],
+                                                            border: Border.all(color: Colors.white, width: 2, style: BorderStyle.solid),
+                                                          ),
+                                                        ),
+                                                    ),
+                                                ));
+                                            }
+                                      )
+                                    )
+                                  ),
+                                ],
+                              )
+                          ).toList(),
+                        Container(),
+                    ],
+                  ),
+              ),
+            ]
+        ),
       bottomNavigationBar: MainBottomNavigationBar(context, selectedIndex),
     );
-
   }
 
   void addRemoveTaskFact(PersonTaskProgress personTaskProgress, int sum, bool status) {
