@@ -35,7 +35,7 @@ void main() {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
       overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
   setup();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 void setup() {

@@ -21,6 +21,7 @@ class AddParticipantTasksPage extends StatefulWidget {
   late Person person;
   late List<Activity> _activities;
   late Activity _activitySelected;
+  late List<Tuple2<Activity, List<Activity>>> _categoriesWithActivities;
 
   final String participantsTitle = "Поставьте участнику новую задачу";
   static final String ROUTE_NAME = '/participant_add_tasks';
@@ -35,6 +36,10 @@ class AddParticipantTasksPage extends StatefulWidget {
     }
     this._person = person;
     this._ctx = context;
+    this._activities = activities;
+    _categoriesWithActivities = getIt<HierarchEntityUtil<Activity>>()
+        .getTopDataWithChildren(_activities, '')
+        as List<Tuple2<Activity, List<Activity>>>;
   }
 
   @override
@@ -69,8 +74,6 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
     searchController = TextEditingController(text: _searchString);
     // Start listening to changes.
     searchController.addListener(() => _refreshActivities(searchController.text));
-    List<Tuple2<Activity, List<Activity>>> categoriesWithActivities = getIt<HierarchEntityUtil>().getTopDataWithChildren(this.widget._activities).cast<Tuple2<Activity, List<Activity>>>();
-    categoriesWithActivities.add(Tuple2(activityDummy, List.empty()));
     return Scaffold(
       appBar: AppBar(
         title: Container(
@@ -111,7 +114,7 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
                   Row(
                     children:
                       <Widget>[
-                        ...categoriesWithActivities.map( (categoryWithActivities) =>
+                        ...this.widget._categoriesWithActivities.map( (categoryWithActivities) =>
                               Row(
                                 children: [
                                   Container(
@@ -122,7 +125,7 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
                                         textAlign: TextAlign.left,
                                         style:
                                         TextStyle(
-                                          color: Colors.white,
+                                          color: Theme.of(context).colorScheme.secondary,
                                           fontSize: 32,
                                         ),
                                       ),
@@ -144,7 +147,7 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
                                                 onTap: (){
                                                   setState(() {
                                                     this.widget._activitySelected = categoryWithActivities.item2[index];
-                                                    this.widget._ctx = context;
+                                                    SimpleDialog(title: Text('Выбрана активность ${this.widget._activitySelected.name}'));
                                                   });
                                                 },
                                                 child: Container(
@@ -152,27 +155,59 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
                                                     child:
                                                     SingleChildScrollView(
                                                       child:
-                                                        Container(
-                                                          alignment: Alignment.center,
-                                                          height: 130,
-                                                          width: MediaQuery.of(context).size.width / 2,
-                                                          padding: EdgeInsets.only(bottom: 30),
-                                                          child : FittedBox(
-                                                            fit: BoxFit.fill,
-                                                            child: Text(
-                                                              categoryWithActivities.item2[index].name!,
-                                                              textAlign: TextAlign.center,
-                                                              style: TextStyle(
-                                                                color: Colors.white,
-                                                                fontSize: 32,
+                                                        Row(children: [
+                                                          Container(
+                                                            alignment: Alignment.center,
+                                                            height: 130,
+                                                            width: MediaQuery.of(context).size.width / 2,
+                                                            padding: EdgeInsets.only(bottom: 30),
+                                                            child : FittedBox(
+                                                              fit: BoxFit.fill,
+                                                              child: Text(
+                                                                categoryWithActivities.item2[index].name!,
+                                                                textAlign: TextAlign.center,
+                                                                style: TextStyle(
+                                                                  color: Theme.of(context).colorScheme.secondary,
+                                                                  fontSize: 32,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                            decoration: BoxDecoration(
+                                                              color: Colors.primaries[index],
+                                                              border: Border.all(color: Theme.of(context).colorScheme.secondary,
+                                                                  width: 2,
+                                                                  style: BorderStyle.solid
                                                               ),
                                                             ),
                                                           ),
-                                                          decoration: BoxDecoration(
-                                                            color: Colors.primaries[index],
-                                                            border: Border.all(color: Colors.white, width: 2, style: BorderStyle.solid),
-                                                          ),
-                                                        ),
+                                                          if (index == categoryWithActivities.item2.length - 1)
+                                                            Container(
+                                                              alignment: Alignment.center,
+                                                              height: 130,
+                                                              width: MediaQuery.of(context).size.width / 2,
+                                                              padding: EdgeInsets.only(bottom: 30),
+                                                              child : FittedBox(
+                                                                fit: BoxFit.fill,
+                                                                child:
+                                                                  IconButton(
+                                                                    tooltip: "Добавить",
+                                                                    icon: Icon(
+                                                                      Icons.add,
+                                                                      color: Theme.of(context).colorScheme.secondary,
+                                                                    ),
+                                                                    onPressed: () {
+                                                                      SimpleDialog(title: Text('Требует реализации экрана добавления активности'));
+                                                                    },
+                                                                  )
+                                                              ),
+                                                              decoration: BoxDecoration(
+                                                                color: Colors.primaries[index],
+                                                                border: Border.all(color: Theme.of(context).colorScheme.secondary,
+                                                                    width: 2,
+                                                                    style: BorderStyle.solid),
+                                                              ),
+                                                            )
+                                                        ],)
                                                     ),
                                                 ));
                                             }
@@ -192,43 +227,12 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
     );
   }
 
-  void addRemoveTaskFact(PersonTaskProgress personTaskProgress, int sum, bool status) {
-    DateTime now = DateTime.now();
-    List<TaskFact> data = getIt<TaskFactData>().getData();
-    List<TaskFact> taskFacts = data
-        .where((fact) =>
-    personTaskProgress.id == PersonTaskProgress.makeId(fact)).toList()
-    ;
-    bool isCreate = false;
-    if (taskFacts.isEmpty) {
-      isCreate = true;
-    }
-    if (status) {
-      if (isCreate) {
-        int taskFactCnt = data
-            .where((fact) =>
-        personTaskProgress.person.id == fact.person.id
-            && personTaskProgress.taskPlan.id == fact.taskPlan.id
-            && fact.dtExecute.isSameDate(now)).length;
-        TaskFact taskFact = TaskFact(id: -1,
-            taskPlan: personTaskProgress.taskPlan,
-            person: _person,
-            dtPlan: personTaskProgress.dt,
-            dtExecute: now,
-            sum: sum,
-            status: TaskStatus.DONE.status,
-            cnt: taskFactCnt + 1);
-        int id = getIt<TaskFactData>().addEntity(taskFact);
-      }
-    } else {
-      if (!isCreate) {
-        getIt<TaskFactData>().removeEntity(taskFacts.first);
-      }
-    }
-  }
-
   void _refreshActivities(String searchString) {
-
+    setState(() {
+      this.widget._categoriesWithActivities = getIt<HierarchEntityUtil<Activity>>()
+          .getTopDataWithChildren(this.widget._activities, searchString)
+          as List<Tuple2<Activity, List<Activity>>>;
+    });
   }
 
 }
