@@ -57,6 +57,24 @@ class HierarchEntity extends BaseEntity {
 
   static HierarchEntity getDummy() => HierarchEntity(id: 0, name: 'Dummy');
 
+  static List<Tuple2<T, List<T>>> getTopDataWithChildren <T extends HierarchEntity> (List<T> srcList, String searchString) {
+    String searchStr = searchString.toLowerCase();
+    List<T> categories = srcList
+        .where((element) => (element.parentIdList == null || element.parentIdList!.isEmpty))
+        .toList();
+    return categories
+        .map((category) {
+          List<T> children = srcList
+              .where((element) => (element.parentIdList != null && element.parentIdList!.split(STRING_DELIMETER).map((e) => int.parse(e)).contains(category.id))
+              && (searchStr.isEmpty ? true : element.name!.toLowerCase().contains(searchStr))
+          )
+              .toList();
+          return Tuple2(category, children);
+      }
+      )
+      .toList();
+  }
+
 }
 
 class HierarchEntityUtil<T extends HierarchEntity> {
@@ -67,24 +85,6 @@ class HierarchEntityUtil<T extends HierarchEntity> {
 
   List<T> getChildrenData(T entity, List<T> srcList) {
     return srcList.where((element) => element.parentIdList != null && element.parentIdList!.split(STRING_DELIMETER).map((e) => int.parse(e)).contains(entity.id)).toList();
-  }
-
-  List<Tuple2<T, List<T>>> getTopDataWithChildren(List<T> srcList, String searchString) {
-    String searchStr = searchString.toLowerCase();
-    List<T> categories = srcList
-        .where((element) => (element.parentIdList == null || element.parentIdList!.isEmpty))
-        .toList();
-    return categories
-      .map((category) {
-        List<T> children = srcList
-            .where((element) => (element.parentIdList != null && element.parentIdList!.split(STRING_DELIMETER).map((e) => int.parse(e)).contains(category.id))
-              && (searchStr.isEmpty ? true : element.name!.toLowerCase().contains(searchStr))
-            )
-            .toList();
-        return Tuple2(category, children);
-        }
-      )
-      .toList();
   }
 
 }

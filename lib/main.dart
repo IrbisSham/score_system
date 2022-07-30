@@ -51,7 +51,6 @@ void setup() {
   getIt.registerSingleton<PersonData>(PersonData());
   getIt.registerSingleton<TaskPlanData>(TaskPlanData());
   getIt.registerSingleton<TaskFactData>(TaskFactData());
-  getIt.registerSingleton<HierarchEntityUtil>(HierarchEntityUtil());
 }
 
 class MyApp extends StatelessWidget {

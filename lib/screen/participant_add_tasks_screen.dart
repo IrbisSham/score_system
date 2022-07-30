@@ -37,9 +37,8 @@ class AddParticipantTasksPage extends StatefulWidget {
     this._person = person;
     this._ctx = context;
     this._activities = activities;
-    _categoriesWithActivities = getIt<HierarchEntityUtil<Activity>>()
-        .getTopDataWithChildren(_activities, '')
-        as List<Tuple2<Activity, List<Activity>>>;
+    _categoriesWithActivities = HierarchEntity
+        .getTopDataWithChildren(_activities, '');
   }
 
   @override
@@ -133,87 +132,101 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
                                   Container(
                                     height: MediaQuery.of(context).size.height / 5,
                                     child:
-                                    SingleChildScrollView(
-                                      child: GridView.builder(
-                                          shrinkWrap: true,
-                                          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                                              maxCrossAxisExtent: MediaQuery.of(context).size.width / 4,
-                                              // childAspectRatio: 4,
-                                              // crossAxisSpacing: 0,
-                                              mainAxisSpacing: 20),
-                                          itemCount: categoryWithActivities.item2.length,
-                                          itemBuilder: (BuildContext ctx, index) {
-                                            return GestureDetector(
-                                                onTap: (){
-                                                  setState(() {
-                                                    this.widget._activitySelected = categoryWithActivities.item2[index];
-                                                    SimpleDialog(title: Text('Выбрана активность ${this.widget._activitySelected.name}'));
-                                                  });
-                                                },
-                                                child: Container(
-                                                    alignment: Alignment.center,
-                                                    child:
-                                                    SingleChildScrollView(
-                                                      child:
-                                                        Row(children: [
-                                                          Container(
-                                                            alignment: Alignment.center,
-                                                            height: 130,
-                                                            width: MediaQuery.of(context).size.width / 2,
-                                                            padding: EdgeInsets.only(bottom: 30),
-                                                            child : FittedBox(
-                                                              fit: BoxFit.fill,
-                                                              child: Text(
-                                                                categoryWithActivities.item2[index].name!,
-                                                                textAlign: TextAlign.center,
-                                                                style: TextStyle(
-                                                                  color: Theme.of(context).colorScheme.secondary,
-                                                                  fontSize: 32,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            decoration: BoxDecoration(
-                                                              color: Colors.primaries[index],
-                                                              border: Border.all(color: Theme.of(context).colorScheme.secondary,
-                                                                  width: 2,
-                                                                  style: BorderStyle.solid
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          if (index == categoryWithActivities.item2.length - 1)
-                                                            Container(
-                                                              alignment: Alignment.center,
-                                                              height: 130,
-                                                              width: MediaQuery.of(context).size.width / 2,
-                                                              padding: EdgeInsets.only(bottom: 30),
-                                                              child : FittedBox(
-                                                                fit: BoxFit.fill,
-                                                                child:
-                                                                  IconButton(
-                                                                    tooltip: "Добавить",
-                                                                    icon: Icon(
-                                                                      Icons.add,
-                                                                      color: Theme.of(context).colorScheme.secondary,
-                                                                    ),
-                                                                    onPressed: () {
-                                                                      SimpleDialog(title: Text('Требует реализации экрана добавления активности'));
-                                                                    },
-                                                                  )
-                                                              ),
-                                                              decoration: BoxDecoration(
-                                                                color: Colors.primaries[index],
-                                                                border: Border.all(color: Theme.of(context).colorScheme.secondary,
-                                                                    width: 2,
-                                                                    style: BorderStyle.solid),
-                                                              ),
-                                                            )
-                                                        ],)
-                                                    ),
-                                                ));
-                                            }
-                                      )
-                                    )
+                                      Container(
+                                      // Expanded(child:
+                                    //     SizedBox(
+                                    //         height: 200.0,
+                                    //     child:
+                                    //     SingleChildScrollView(
+                                    //       child: GridView.builder(
+                                    //       shrinkWrap: true,
+                                    //       gridDelegate:
+                                    //         // SliverGridDelegateWithMaxCrossAxisExtent(
+                                    //         //   maxCrossAxisExtent: MediaQuery.of(context).size.width / 4,
+                                    //         //   childAspectRatio: 4,
+                                    //         //   crossAxisSpacing: 0,
+                                    //         //   mainAxisSpacing: 20
+                                    //         // ),
+                                    //         SliverGridDelegateWithFixedCrossAxisCount(
+                                    //           crossAxisCount: 2,
+                                    //           childAspectRatio: 3 / 2,
+                                    //           crossAxisSpacing: 10,
+                                    //           mainAxisSpacing: 10,
+                                    //         ),
+                                    //       itemCount: categoryWithActivities.item2.length,
+                                    //       itemBuilder: (BuildContext ctx, index) {
+                                    //         return GestureDetector(
+                                    //             onTap: (){
+                                    //               setState(() {
+                                    //                 this.widget._activitySelected = categoryWithActivities.item2[index];
+                                    //                 SimpleDialog(title: Text('Выбрана активность ${this.widget._activitySelected.name}'));
+                                    //               });
+                                    //             },
+                                    //             child: Expanded(
+                                    //                 child:
+                                    //                 SingleChildScrollView(
+                                    //                   child:
+                                    //                     Row(children: [
+                                    //                       Container(
+                                    //                         alignment: Alignment.center,
+                                    //                         height: 130,
+                                    //                         width: MediaQuery.of(context).size.width / 2,
+                                    //                         padding: EdgeInsets.only(bottom: 30),
+                                    //                         child : FittedBox(
+                                    //                           fit: BoxFit.fill,
+                                    //                           child: Text(
+                                    //                             categoryWithActivities.item2[index].name!,
+                                    //                             textAlign: TextAlign.center,
+                                    //                             style: TextStyle(
+                                    //                               color: Theme.of(context).colorScheme.secondary,
+                                    //                               fontSize: 32,
+                                    //                             ),
+                                    //                           ),
+                                    //                         ),
+                                    //                         decoration: BoxDecoration(
+                                    //                           color: Colors.primaries[index],
+                                    //                           border: Border.all(color: Theme.of(context).colorScheme.secondary,
+                                    //                               width: 2,
+                                    //                               style: BorderStyle.solid
+                                    //                           ),
+                                    //                         ),
+                                    //                       ),
+                                    //                       if (index == categoryWithActivities.item2.length - 1)
+                                    //                         Container(
+                                    //                           alignment: Alignment.center,
+                                    //                           height: 130,
+                                    //                           width: MediaQuery.of(context).size.width / 2,
+                                    //                           padding: EdgeInsets.only(bottom: 30),
+                                    //                           child : FittedBox(
+                                    //                             fit: BoxFit.fill,
+                                    //                             child:
+                                    //                               IconButton(
+                                    //                                 tooltip: "Добавить",
+                                    //                                 icon: Icon(
+                                    //                                   Icons.add,
+                                    //                                   color: Theme.of(context).colorScheme.secondary,
+                                    //                                 ),
+                                    //                                 onPressed: () {
+                                    //                                   SimpleDialog(title: Text('Требует реализации экрана добавления активности'));
+                                    //                                 },
+                                    //                               )
+                                    //                           ),
+                                    //                           decoration: BoxDecoration(
+                                    //                             color: Colors.primaries[index],
+                                    //                             border: Border.all(color: Theme.of(context).colorScheme.secondary,
+                                    //                                 width: 2,
+                                    //                                 style: BorderStyle.solid),
+                                    //                           ),
+                                    //                         )
+                                    //                     ],)
+                                    //                 ),
+                                    //             ));
+                                    //         }
+                                    //   )
+                                    // )
+                                    // )
                                   ),
+                                // ),
                                 ],
                               )
                           ).toList(),
@@ -229,9 +242,8 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
 
   void _refreshActivities(String searchString) {
     setState(() {
-      this.widget._categoriesWithActivities = getIt<HierarchEntityUtil<Activity>>()
-          .getTopDataWithChildren(this.widget._activities, searchString)
-          as List<Tuple2<Activity, List<Activity>>>;
+      this.widget._categoriesWithActivities = HierarchEntity
+          .getTopDataWithChildren(this.widget._activities, searchString);
     });
   }
 
