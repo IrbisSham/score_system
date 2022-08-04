@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:score_system/model/entity.dart';
@@ -13,6 +15,7 @@ import '../main.dart';
 import '../model/activity.dart';
 import '../model/person_task_progress.dart';
 import '../vocabulary/person_data.dart';
+import '../widget/add_task_activity_item.dart';
 
 class AddParticipantTasksPage extends StatefulWidget {
 
@@ -38,7 +41,7 @@ class AddParticipantTasksPage extends StatefulWidget {
     this._ctx = context;
     this._activities = activities;
     _categoriesWithActivities = HierarchEntity
-        .getTopDataWithChildren(_activities, '');
+        .getTopDataWithChildrenAndDummy(_activities, '');
   }
 
   @override
@@ -88,152 +91,42 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
             children: [
               Column(
                 children: [
+                  // Container(
+                  //   child:
+                  //     Text(
+                  //       'Фильтр по словоформе'
+                  //     ),
+                  //   width: MediaQuery.of(context).size.width / 5,
+                  // ),
                   Container(
-                    child:
-                      Text(
-                        'Фильтр по словоформе'
-                      ),
-                    width: MediaQuery.of(context).size.width / 5,
-                  ),
-                  Container(
+                    width: MediaQuery.of(context).size.width * 4 / 5,
                     child:
                       TextField(
-                        controller: searchController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: 'Введите термин для поиска',
+                        ),
                         keyboardType: TextInputType.text,
                         inputFormatters: [FilteringTextInputFormatter.singleLineFormatter], // Only numbers can be entered
+                        controller: searchController,
                       ),
-                    width: MediaQuery.of(context).size.width * 4 / 5,
                   ),
                 ],
               ),
-              Container(
-                height: MediaQuery.of(context).size.height - 130,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                child:
-                  Row(
-                    children:
-                      <Widget>[
-                        ...this.widget._categoriesWithActivities.map( (categoryWithActivities) =>
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.symmetric(vertical: 20),
-                                    child:
-                                      Text(
-                                        categoryWithActivities.item1.name!,
-                                        textAlign: TextAlign.left,
-                                        style:
-                                        TextStyle(
-                                          color: Theme.of(context).colorScheme.secondary,
-                                          fontSize: 32,
-                                        ),
-                                      ),
-                                  ),
-                                  Container(
-                                    height: MediaQuery.of(context).size.height / 5,
-                                    child:
-                                      Container(
-                                      // Expanded(child:
-                                    //     SizedBox(
-                                    //         height: 200.0,
-                                    //     child:
-                                    //     SingleChildScrollView(
-                                    //       child: GridView.builder(
-                                    //       shrinkWrap: true,
-                                    //       gridDelegate:
-                                    //         // SliverGridDelegateWithMaxCrossAxisExtent(
-                                    //         //   maxCrossAxisExtent: MediaQuery.of(context).size.width / 4,
-                                    //         //   childAspectRatio: 4,
-                                    //         //   crossAxisSpacing: 0,
-                                    //         //   mainAxisSpacing: 20
-                                    //         // ),
-                                    //         SliverGridDelegateWithFixedCrossAxisCount(
-                                    //           crossAxisCount: 2,
-                                    //           childAspectRatio: 3 / 2,
-                                    //           crossAxisSpacing: 10,
-                                    //           mainAxisSpacing: 10,
-                                    //         ),
-                                    //       itemCount: categoryWithActivities.item2.length,
-                                    //       itemBuilder: (BuildContext ctx, index) {
-                                    //         return GestureDetector(
-                                    //             onTap: (){
-                                    //               setState(() {
-                                    //                 this.widget._activitySelected = categoryWithActivities.item2[index];
-                                    //                 SimpleDialog(title: Text('Выбрана активность ${this.widget._activitySelected.name}'));
-                                    //               });
-                                    //             },
-                                    //             child: Expanded(
-                                    //                 child:
-                                    //                 SingleChildScrollView(
-                                    //                   child:
-                                    //                     Row(children: [
-                                    //                       Container(
-                                    //                         alignment: Alignment.center,
-                                    //                         height: 130,
-                                    //                         width: MediaQuery.of(context).size.width / 2,
-                                    //                         padding: EdgeInsets.only(bottom: 30),
-                                    //                         child : FittedBox(
-                                    //                           fit: BoxFit.fill,
-                                    //                           child: Text(
-                                    //                             categoryWithActivities.item2[index].name!,
-                                    //                             textAlign: TextAlign.center,
-                                    //                             style: TextStyle(
-                                    //                               color: Theme.of(context).colorScheme.secondary,
-                                    //                               fontSize: 32,
-                                    //                             ),
-                                    //                           ),
-                                    //                         ),
-                                    //                         decoration: BoxDecoration(
-                                    //                           color: Colors.primaries[index],
-                                    //                           border: Border.all(color: Theme.of(context).colorScheme.secondary,
-                                    //                               width: 2,
-                                    //                               style: BorderStyle.solid
-                                    //                           ),
-                                    //                         ),
-                                    //                       ),
-                                    //                       if (index == categoryWithActivities.item2.length - 1)
-                                    //                         Container(
-                                    //                           alignment: Alignment.center,
-                                    //                           height: 130,
-                                    //                           width: MediaQuery.of(context).size.width / 2,
-                                    //                           padding: EdgeInsets.only(bottom: 30),
-                                    //                           child : FittedBox(
-                                    //                             fit: BoxFit.fill,
-                                    //                             child:
-                                    //                               IconButton(
-                                    //                                 tooltip: "Добавить",
-                                    //                                 icon: Icon(
-                                    //                                   Icons.add,
-                                    //                                   color: Theme.of(context).colorScheme.secondary,
-                                    //                                 ),
-                                    //                                 onPressed: () {
-                                    //                                   SimpleDialog(title: Text('Требует реализации экрана добавления активности'));
-                                    //                                 },
-                                    //                               )
-                                    //                           ),
-                                    //                           decoration: BoxDecoration(
-                                    //                             color: Colors.primaries[index],
-                                    //                             border: Border.all(color: Theme.of(context).colorScheme.secondary,
-                                    //                                 width: 2,
-                                    //                                 style: BorderStyle.solid),
-                                    //                           ),
-                                    //                         )
-                                    //                     ],)
-                                    //                 ),
-                                    //             ));
-                                    //         }
-                                    //   )
-                                    // )
-                                    // )
-                                  ),
-                                // ),
-                                ],
-                              )
-                          ).toList(),
-                        Container(),
-                    ],
-                  ),
-              ),
+              // Container(
+              //   height: MediaQuery.of(context).size.height - 130,
+              //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              //   width: MediaQuery.of(context).size.width - 50,
+              //   child:
+              //     Row(
+              //       children:
+              //         <Widget>[
+              //           ...this.widget._categoriesWithActivities.map( (categoryWithActivities) =>
+              //               AddTaskActivityItem(categoryWithActivities)
+              //             ).toList(),
+              //       ],
+              //     ),
+              // ),
             ]
         ),
       bottomNavigationBar: MainBottomNavigationBar(context, selectedIndex),
@@ -241,9 +134,12 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
   }
 
   void _refreshActivities(String searchString) {
-    setState(() {
-      this.widget._categoriesWithActivities = HierarchEntity
-          .getTopDataWithChildren(this.widget._activities, searchString);
+    Future.delayed(const Duration(seconds: 1), () {
+      setState(() {
+        this._searchString = searchString;
+        this.widget._categoriesWithActivities = HierarchEntity
+            .getTopDataWithChildrenAndDummy(this.widget._activities, searchString);
+      });
     });
   }
 

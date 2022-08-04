@@ -10,6 +10,8 @@ const int STATUS_ACTUAL = 0;
 const int STATUS_EXPIRED = -1;
 const String LOCALE_LANG = 'ru';
 
+const String DUMMY = 'Dummy';
+
 const String FONT_FAMILY_SECOND = 'Pattaya';
 
 const bool IS_USE_CATEGORIES = false;

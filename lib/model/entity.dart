@@ -55,9 +55,7 @@ class HierarchEntity extends BaseEntity {
     this.parentIdList = obj['parentIdList'];
   }
 
-  static HierarchEntity getDummy() => HierarchEntity(id: 0, name: 'Dummy');
-
-  static List<Tuple2<T, List<T>>> getTopDataWithChildren <T extends HierarchEntity> (List<T> srcList, String searchString) {
+  static List<Tuple2<T, List<T>>> getTopDataWithChildrenAndDummy <T extends HierarchEntity> (List<T> srcList, String searchString) {
     String searchStr = searchString.toLowerCase();
     List<T> categories = srcList
         .where((element) => (element.parentIdList == null || element.parentIdList!.isEmpty))

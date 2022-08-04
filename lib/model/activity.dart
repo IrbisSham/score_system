@@ -1,3 +1,4 @@
+import '../vocabulary/constant.dart';
 import 'entity.dart';
 
 class Activity extends HierarchEntity{
@@ -56,5 +57,5 @@ class Activity extends HierarchEntity{
 
 }
 
-Activity activityDummy = Activity(id: 0, name: 'Dummy');
+Activity activityDummy = Activity(id: 0, name: DUMMY);
 
