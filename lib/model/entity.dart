@@ -68,8 +68,8 @@ class HierarchEntity extends BaseEntity {
           )
               .toList();
           return Tuple2(category, children);
-      }
-      )
+        }
+        )
       .toList();
   }
 

@@ -23,8 +23,9 @@ class AddParticipantTasksPage extends StatefulWidget {
   late Person? _person;
   late Person person;
   late List<Activity> _activities;
-  late Activity _activitySelected;
   late List<Tuple2<Activity, List<Activity>>> _categoriesWithActivities;
+  String _searchStr = "";
+  late Activity _activitySelected;
 
   final String participantsTitle = "Поставьте участнику новую задачу";
   static final String ROUTE_NAME = '/participant_add_tasks';
@@ -51,7 +52,6 @@ class AddParticipantTasksPage extends StatefulWidget {
 
 class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
   late TextEditingController searchController;
-  String _searchString = "";
   int selectedIndex = 2;
 
   @override
@@ -73,9 +73,8 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
     } else {
       this.widget.person = this.widget._person!;
     }
-    searchController = TextEditingController(text: _searchString);
+    searchController = TextEditingController(text: this.widget._searchStr);
     // Start listening to changes.
-    searchController.addListener(() => _refreshActivities(searchController.text));
     return Scaffold(
       appBar: AppBar(
         title: Container(
@@ -87,48 +86,53 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
         ),
       ),
       body:
-        Row(
-            children: [
-              Column(
+        // SingleChildScrollView(
+        // scrollDirection: Axis.horizontal,
+        //     child:
+            Column(
                 children: [
-                  // Container(
-                  //   child:
-                  //     Text(
-                  //       'Фильтр по словоформе'
-                  //     ),
-                  //   width: MediaQuery.of(context).size.width / 5,
-                  // ),
                   Container(
-                    width: MediaQuery.of(context).size.width * 4 / 5,
+                    padding: EdgeInsets.only(top: 20, left: 20, right: 20),
                     child:
-                      TextField(
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          hintText: 'Введите термин для поиска',
-                        ),
-                        keyboardType: TextInputType.text,
-                        inputFormatters: [FilteringTextInputFormatter.singleLineFormatter], // Only numbers can be entered
-                        controller: searchController,
+                    TextField(
+                      decoration: InputDecoration(
+                          labelText: "Фраза для поиска",
+                          hintText: "Введите фразу для поиска",
+                          prefixIcon: Icon(Icons.search),
+                          border:
+                            OutlineInputBorder(
+                              borderRadius: BorderRadius.all(Radius.circular(25.0))
+                            )
                       ),
+                      keyboardType: TextInputType.text,
+                      inputFormatters: [FilteringTextInputFormatter.singleLineFormatter], // Only numbers can be entered
+                      controller: searchController,
+                      onChanged: (value) {
+                        _refreshActivities(value);
+                      },
+                    ),
                   ),
-                ],
-              ),
-              // Container(
-              //   height: MediaQuery.of(context).size.height - 130,
-              //   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              //   width: MediaQuery.of(context).size.width - 50,
-              //   child:
-              //     Row(
-              //       children:
-              //         <Widget>[
-              //           ...this.widget._categoriesWithActivities.map( (categoryWithActivities) =>
-              //               AddTaskActivityItem(categoryWithActivities)
-              //             ).toList(),
-              //       ],
-              //     ),
-              // ),
-            ]
-        ),
+                  Padding(padding: EdgeInsets.symmetric(vertical: 20)),
+                  Expanded(child:
+                    SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child:
+                  // Container(
+                  //   width: MediaQuery.of(context).size.width * 4 / 5,
+                  //   child:
+                      Column(
+                        children:
+                        <Widget>[
+                          ...this.widget._categoriesWithActivities.map( (categoryWithActivities) =>
+                              AddTaskActivityItem(categoryWithActivities)
+                          ).toList(),
+                        ],
+                      ),
+                    ),
+                  ),
+                ]
+            ),
+          // ),
       bottomNavigationBar: MainBottomNavigationBar(context, selectedIndex),
     );
   }
@@ -136,9 +140,9 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
   void _refreshActivities(String searchString) {
     Future.delayed(const Duration(seconds: 1), () {
       setState(() {
-        this._searchString = searchString;
         this.widget._categoriesWithActivities = HierarchEntity
             .getTopDataWithChildrenAndDummy(this.widget._activities, searchString);
+        this.widget._searchStr = searchString;
       });
     });
   }
