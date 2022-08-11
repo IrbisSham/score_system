@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:score_system/data/dbprovider.dart';
@@ -24,6 +25,8 @@ import 'package:score_system/vocabulary/person_data.dart';
 import 'package:loggy/loggy.dart';
 import 'package:score_system/vocabulary/task_data.dart';
 
+import 'bloc/category_activity_bloc.dart';
+import 'bloc/category_activity_state.dart';
 import 'model/entity.dart';
 import 'model/person.dart';
 
@@ -35,7 +38,20 @@ void main() {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
       overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
   setup();
-  runApp(MyApp());
+  runApp(
+    MultiBlocProvider(providers: [
+      BlocProvider(
+        create: (context) => CategoryActivityBloc(
+            CategoryActivityPresented(
+                HierarchEntity
+                    .getTopDataWithChildren(getIt<ActivityData>().getData())
+            )
+        ),
+      ),
+    ],
+      child: AppStartWidget()
+    ),
+  );
 }
 
 void setup() {
@@ -53,7 +69,7 @@ void setup() {
   getIt.registerSingleton<TaskFactData>(TaskFactData());
 }
 
-class MyApp extends StatelessWidget {
+class AppStartWidget extends StatelessWidget {
 
   Person? _person;
 

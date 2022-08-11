@@ -55,8 +55,18 @@ class HierarchEntity extends BaseEntity {
     this.parentIdList = obj['parentIdList'];
   }
 
-  static List<Tuple2<T, List<T>>> getTopDataWithChildrenAndDummy <T extends HierarchEntity> (List<T> srcList, String searchString) {
+  static List<Tuple2<T, List<T>>> getTopDataWithChildrenByWord <T extends HierarchEntity> (List<Tuple2<T, List<T>>> srcList, String searchString) {
     String searchStr = searchString.toLowerCase();
+    return srcList
+        .map((parentWithChildren) {
+          T parent = parentWithChildren.item1;
+          List<T> children = parentWithChildren.item2.where((child) => searchStr.isEmpty ? true : child.name!.toLowerCase().contains(searchStr)).toList();
+          return Tuple2(parent, children);
+        })
+        .toList();
+  }
+
+  static List<Tuple2<T, List<T>>> getTopDataWithChildren <T extends HierarchEntity> (List<T> srcList) {
     List<T> categories = srcList
         .where((element) => (element.parentIdList == null || element.parentIdList!.isEmpty))
         .toList();
@@ -64,7 +74,6 @@ class HierarchEntity extends BaseEntity {
         .map((category) {
           List<T> children = srcList
               .where((element) => (element.parentIdList != null && element.parentIdList!.split(STRING_DELIMETER).map((e) => int.parse(e)).contains(category.id))
-              && (searchStr.isEmpty ? true : element.name!.toLowerCase().contains(searchStr))
           )
               .toList();
           return Tuple2(category, children);
