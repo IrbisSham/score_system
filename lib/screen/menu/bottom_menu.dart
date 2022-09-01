@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:score_system/current_data.dart';
+import 'package:score_system/screen/participants_prize_screen.dart';
 
+import '../../navigation/pass_arguments.dart';
+import '../encyclopedia_screen.dart';
 import '../participant_tasks_screen.dart';
 
 class MainBottomNavigationBar extends BottomNavigationBar{
@@ -34,9 +37,32 @@ class MainBottomNavigationBar extends BottomNavigationBar{
       selectedIndex = index;
       switch(index) {
         case 0:
+          Navigator.pushNamed(
+            context,
+            ParticipantTasksPage.ROUTE_NAME,
+            arguments: PersonDatesIntervalArguments(
+                CURRENT_USER,
+                CURRENT_DATA_MIN,
+                CURRENT_DATA_MAX
+            ),
+          );
           break;
         case 1:
-
+          Navigator.pushNamed(
+            context,
+            ParticipantPrizePage.ROUTE_NAME,
+            arguments: PersonDatesIntervalArguments(
+                CURRENT_USER,
+                CURRENT_DATA_MIN,
+                CURRENT_DATA_MAX
+            ),
+          );
+          break;
+        case 2:
+          Navigator.pushNamed(
+            context,
+            EncyclopediaPage.ROUTE_NAME,
+          );
           break;
       }
     },

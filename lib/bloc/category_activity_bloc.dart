@@ -15,7 +15,7 @@ class CategoryActivityBloc extends Bloc<CategoryActivityEvent, CategoryActivityS
 
   // CategoryActivityState get initialState => CategoryActivityPresented(
   //     HierarchEntity
-  //       .getTopDataWithChildren(getIt<ActivityData>().getData())
+  //       .getTopDataWithChildren(locator<ActivityData>().getData())
   // );
 
   Stream<CategoryActivityState> mapEventToState(CategoryActivityEvent event) async* {

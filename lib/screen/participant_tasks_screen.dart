@@ -9,15 +9,9 @@ import 'package:score_system/util/date_util.dart';
 import 'package:score_system/vocabulary/constant.dart';
 import 'package:score_system/vocabulary/task_data.dart';
 
-import '../main.dart';
+import '../locator.dart';
 import '../model/person_task_progress.dart';
-
-class ParticipantTasksArguments {
-  final Person _person;
-  final DateTime _dtBeg;
-  final DateTime _dtEnd;
-  ParticipantTasksArguments(this._person, this._dtBeg, this._dtEnd);
-}
+import '../navigation/pass_arguments.dart';
 
 class ParticipantTasksPage extends StatefulWidget {
 
@@ -59,13 +53,13 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as ParticipantTasksArguments;
-    _person = args._person;
+    final args = ModalRoute.of(context)!.settings.arguments as PersonDatesIntervalArguments;
+    _person = args.person;
     final DateTime now = DateTime.now();
-    _dtBeg = args._dtBeg;
-    _dtEnd = args._dtEnd;
-    _personProgress = getIt<PersonService>().getPersonProgress(_person, _dtBeg, _dtEnd)[_person];
-    _personTaskProgress = getIt<PersonService>().getPersonTaskProgress(_person, _dtBeg, _dtEnd)[_person];
+    _dtBeg = args.dtBeg;
+    _dtEnd = args.dtEnd;
+    _personProgress = locator<PersonService>().getPersonProgress(_person, _dtBeg, _dtEnd)[_person];
+    _personTaskProgress = locator<PersonService>().getPersonTaskProgress(_person, _dtBeg, _dtEnd)[_person];
     if (_personTaskProgress != null) {
       int cnt = -1;
       _personTaskProgress!.forEach((element) {
@@ -124,7 +118,7 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
                           alignment: Alignment.center,
                           child:
                           Text(
-                            getIt<DateUtil>().getDateNowInStr(),
+                            locator<DateUtil>().getDateNowInStr(),
                             style: TextStyle(
                               fontSize: 26,
                               fontFamily: FONT_FAMILY_SECOND,
@@ -274,7 +268,7 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
 
   void addRemoveTaskFact(PersonTaskProgress personTaskProgress, int sum, bool status) {
     DateTime now = DateTime.now();
-    List<TaskFact> data = getIt<TaskFactData>().getData();
+    List<TaskFact> data = locator<TaskFactData>().getData();
     List<TaskFact> taskFacts = data
         .where((fact) =>
           personTaskProgress.id == PersonTaskProgress.makeId(fact)).toList()
@@ -298,32 +292,32 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
             sum: sum,
             status: TaskStatus.DONE.status,
             cnt: taskFactCnt + 1);
-        int id = getIt<TaskFactData>().addEntity(taskFact);
+        int id = locator<TaskFactData>().addEntity(taskFact);
       } else {
         _taskFactModiStatus(personTaskProgress, TaskStatus.DONE.status);
       }
     } else {
       if (!isCreate) {
-        getIt<TaskFactData>().removeEntity(taskFacts.first);
+        locator<TaskFactData>().removeEntity(taskFacts.first);
       }
     }
   }
 
   void _taskFactModiSum(PersonTaskProgress personTaskProgress, int sum) {
-    List<TaskFact> data = getIt<TaskFactData>().getData();
+    List<TaskFact> data = locator<TaskFactData>().getData();
     List<TaskFact> taskFacts = data.where((element) => PersonTaskProgress.makeId(element) == personTaskProgress.id).toList();
     if (taskFacts.isNotEmpty) {
       taskFacts.first.sum = sum;
-      getIt<TaskFactData>().modifyEntity(taskFacts.first);
+      locator<TaskFactData>().modifyEntity(taskFacts.first);
     }
   }
 
   void _taskFactModiStatus(PersonTaskProgress personTaskProgress, int status) {
-    List<TaskFact> data = getIt<TaskFactData>().getData();
+    List<TaskFact> data = locator<TaskFactData>().getData();
     List<TaskFact> taskFacts = data.where((element) => PersonTaskProgress.makeId(element) == personTaskProgress.id).toList();
     if (taskFacts.isNotEmpty) {
       taskFacts.first.status = status;
-      getIt<TaskFactData>().modifyEntity(taskFacts.first);
+      locator<TaskFactData>().modifyEntity(taskFacts.first);
     }
   }
 

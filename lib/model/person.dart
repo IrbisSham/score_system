@@ -1,5 +1,5 @@
+import 'package:score_system/vocabulary/constant.dart';
 import 'package:score_system/vocabulary/person_data.dart';
-
 import 'entity.dart';
 
 class Person extends HierarchEntity{
@@ -53,6 +53,7 @@ class Person extends HierarchEntity{
               && runtimeType == other.runtimeType
               && id == other.id
               && name == other.name
+              && desc == other.desc
               && family == other.family
               && fatherName == other.fatherName
               && nickName == other.nickName
@@ -62,6 +63,7 @@ class Person extends HierarchEntity{
   int get hashCode {
     int result = 17;
     result = 37 * result + id.hashCode;
+    result = 37 * result + desc.hashCode;
     result = 37 * result + name.hashCode;
     result = 37 * result + family.hashCode;
     result = 37 * result + fatherName.hashCode;
@@ -71,3 +73,5 @@ class Person extends HierarchEntity{
   }
 
 }
+
+Person PERSON_DUMMY = Person(id: 0, name: DUMMY);

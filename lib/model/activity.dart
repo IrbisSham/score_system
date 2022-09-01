@@ -34,6 +34,7 @@ class Activity extends HierarchEntity{
               && runtimeType == other.runtimeType
               && id == other.id
               && name == other.name
+              && desc == other.desc
               && parentIdList == other.parentIdList
               && status == other.status
               && sum == other.sum
@@ -46,6 +47,7 @@ class Activity extends HierarchEntity{
     int result = 17;
     result = 37 * result + id.hashCode;
     result = 37 * result + name.hashCode;
+    result = 37 * result + desc.hashCode;
     result = 37 * result + parentIdList.hashCode;
     result = 37 * result + status.hashCode;
     result = 37 * result + sum.hashCode;
@@ -57,5 +59,5 @@ class Activity extends HierarchEntity{
 
 }
 
-Activity activityDummy = Activity(id: 0, name: DUMMY);
+Activity ACTIVITY_DUMMY = Activity(id: 0, name: DUMMY);
 

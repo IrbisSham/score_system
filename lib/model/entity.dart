@@ -5,14 +5,16 @@ class BaseEntity {
   late int id;
   String? name;
   String? desc;
+  late int status;
 
-  BaseEntity({required this.id, this.name, this.desc});
+  BaseEntity({required this.id, this.name, this.desc, required this.status});
 
   Map<String,dynamic> toMap(){ // used when inserting data to the database
     return <String,dynamic>{
       "id" : id,
       "name" : name,
       "desc" : desc,
+      "status" : status,
     };
   }
 
@@ -20,34 +22,33 @@ class BaseEntity {
     this.id = obj['id'];
     this.name = obj['fio'];
     this.desc = obj['desc'];
-  }
-
-}
-
-class HierarchEntity extends BaseEntity {
-  late int status;
-  String? parentIdList;
-
-  HierarchEntity({required int id, String? name, String? desc, String? parentIdList, int status = 0}) :
-        this.status = status,
-        this.parentIdList = parentIdList,
-        super(id: id, name: name, desc: desc);
-
-
-  Map<String,dynamic> toMap() {
-    return <String,dynamic>{
-      "id" : id,
-      "name" : name,
-      "parentIdList" : parentIdList,
-      "status" : status,
-      "desc" : desc,
-    };
+    this.status = obj['status'];
   }
 
   Map<String,dynamic> toMapNoId() { // used when inserting data to the database
     Map<String,dynamic> map = toMap();
     map.remove("id");
     return map;
+  }
+
+}
+
+class HierarchEntity extends BaseEntity {
+  String? parentIdList;
+
+  HierarchEntity({required int id, String? name, String? desc, String? parentIdList, int status = 0}) :
+        this.parentIdList = parentIdList,
+        super(id: id, name: name, desc: desc, status: status);
+
+
+  Map<String,dynamic> toMap() {
+    return <String,dynamic>{
+      "id" : id,
+      "name" : name,
+      "desc" : desc,
+      "status" : status,
+      "parentIdList" : parentIdList,
+    };
   }
 
   HierarchEntity.fromMap(dynamic obj) : super.fromMap(obj) {

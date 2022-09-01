@@ -1,18 +1,18 @@
-import 'dart:collection';
-
 import 'package:score_system/model/activity.dart';
 import 'package:score_system/model/person.dart';
+import 'package:score_system/model/prize.dart';
 import 'package:score_system/model/schedule.dart';
 import 'package:score_system/model/task.dart';
-import 'package:score_system/vocabulary/constant.dart';
-import 'package:score_system/vocabulary/task_data.dart';
-import 'package:tuple/tuple.dart';
 import 'package:score_system/util/date_util.dart';
-import 'package:time_machine/time_machine.dart';
+import 'package:score_system/vocabulary/task_data.dart';
 
-import '../main.dart';
+import '../locator.dart';
+import '../model/person_prize.dart';
 import '../model/person_progress.dart';
+import '../model/person_success.dart';
 import '../model/person_task_progress.dart';
+import '../vocabulary/person_prize_data.dart';
+import '../vocabulary/prize_data.dart';
 
 class PersonTaskId {
   final Person person;
@@ -79,11 +79,11 @@ class PersonService {
     /**
      * Get all plan tasks
      */
-    List<TaskPlan> plans = getIt<TaskPlanData>().getData();
+    List<TaskPlan> plans = locator<TaskPlanData>().getData();
     /**
      * Get all fact tasks
      */
-    List<TaskFact> facts = getIt<TaskFactData>().getData();
+    List<TaskFact> facts = locator<TaskFactData>().getData();
     /**
      * Get all actual plan tasks progresses
      */
@@ -110,17 +110,78 @@ class PersonService {
     return rezMap;
   }
 
+  /// Get person tasks complete. If person == null then get all persons progress. If dtBegin and dtEnd are empty then for all period
+  Map<Person, PersonSuccess> getPersonPrizeStat(Person? currentPerson, DateTime dtBegin, DateTime dtEnd) {
+    Map<Person, PersonSuccess> rezMap = {};
+    Map<Person, int> taskCompleteMap = {};
+    Map<Person, int> scoreMap = {};
+    Map<Person, int> prizeChooseMap = {};
+    Map<Person, int> prizeGetMap = {};
+    /**
+     * Get all fact tasks
+     */
+    List<TaskFact> facts = locator<TaskFactData>().getData();
+    /**
+     * Get all actual plan tasks progresses
+     */
+    facts.where((fact) => currentPerson == null ? 1==1 : fact.person == currentPerson)
+        .forEach((fact) {
+          int? oldTaskCompleteVal = taskCompleteMap[fact.person];
+          int? oldScoreVal = scoreMap[fact.person];
+          if (
+            (fact.dtExecute.isAfter(dtBegin) || fact.dtExecute.isAtSameMomentAs(dtBegin))
+            &&
+            (fact.dtExecute.isBefore(dtEnd) || fact.dtExecute.isAtSameMomentAs(dtEnd))
+          ) {
+            int taskComplete = fact.cnt;
+            if (oldTaskCompleteVal == null) {
+              taskCompleteMap[fact.person] = taskComplete;
+            } else {
+              taskCompleteMap[fact.person] = oldTaskCompleteVal + taskComplete;
+            }
+            int score = fact.sum * fact.cnt;
+            if (oldScoreVal == null) {
+              scoreMap[fact.person] = score;
+            } else {
+              scoreMap[fact.person] = oldScoreVal + score;
+            }
+          }
+        });
+    /**
+     * Get all person prize stats
+     */
+    List<PersonPrize> personPrizes = locator<PersonPrizeData>().getData();
+    personPrizes.where((personPrize) => currentPerson == null ? 1==1 : personPrize.person == currentPerson)
+      .forEach((personPrize) {
+        int? oldPrizeChooseVal = prizeChooseMap[personPrize.person];
+        int? oldPrizeGetVal = prizeGetMap[personPrize.person];
+        int prizeChooseVal = 1;
+        if (oldPrizeChooseVal == null) {
+          prizeChooseMap[personPrize.person] = prizeChooseVal;
+        } else {
+          prizeChooseMap[personPrize.person] = oldPrizeChooseVal + prizeChooseVal;
+        }
+        int prizeGetVal = personPrize.isGet ? 1 : 0;
+        if (oldPrizeGetVal == null) {
+          prizeGetMap[personPrize.person] = prizeGetVal;
+        } else {
+          prizeGetMap[personPrize.person] = oldPrizeGetVal + prizeGetVal;
+        }
+    });
+    return rezMap;
+  }
+
   /// Get person progress. If person == null then get all persons progress
   Map<Person, List<PersonTaskProgress>> getPersonTaskProgress(Person? currentPerson, DateTime dtBegin, DateTime dtEnd) {
     Map<Person, List<PersonTaskProgress>> rezMap = {};
     /**
      * Get all plan tasks
      */
-    List<TaskPlan> plans = getIt<TaskPlanData>().getData();
+    List<TaskPlan> plans = locator<TaskPlanData>().getData();
     /**
      * Get all fact tasks
      */
-    List<TaskFact> facts = getIt<TaskFactData>().getData();
+    List<TaskFact> facts = locator<TaskFactData>().getData();
     /**
      * Get all actual plan tasks progresses
      */

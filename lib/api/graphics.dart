@@ -24,7 +24,7 @@ class ButtonGen {
           case '/table_results':
             break;
           case '/person':
-            CurrentUser.person = Person.personByFio(text);
+            CURRENT_USER = Person.personByFio(text);
             break;
         }
         Navigator.pushNamed(context, path);

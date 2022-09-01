@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:score_system/api/graphics.dart';
 import 'package:score_system/current_data.dart';
-import 'package:score_system/screen/intro_screen.dart';
 import 'package:score_system/screen/participants_screen.dart';
-import 'package:score_system/screen/person_ava.dart';
+import 'package:score_system/widget/person_avatar.dart';
 
 class MainMenuPage extends StatelessWidget {
 
@@ -74,7 +73,7 @@ class MainMenuPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children:
                 <Widget>[
-                  if (CurrentUser.person != null)
+                  if (CURRENT_USER != null)
                     PersonAva(),
                   Padding(padding: EdgeInsets.all(10)),
                   ...btnTitleMap.entries.map( (entry) => ButtonGen.btnByListAndTextAndPath(context, btnTitleMap.keys.toList(), entry.key, entry.value)).toList(),

@@ -1,12 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:score_system/main.dart';
 import 'package:score_system/screen/menu/bottom_menu.dart';
-import 'package:score_system/screen/participant_tasks_screen.dart';
 import 'package:score_system/service/person_service.dart';
 import 'package:score_system/util/date_util.dart';
 import 'package:score_system/vocabulary/constant.dart';
+
+import '../current_data.dart';
+import '../locator.dart';
+import '../widget/person_avatar.dart';
 
 class ParticipantsPage extends StatefulWidget {
   static final String ROUTE_NAME = '/participants';
@@ -21,11 +21,9 @@ class ParticipantsPage extends StatefulWidget {
 }
 
 class ParticipantsPageState extends State<ParticipantsPage> {
-  final String participantsTitle = "Участники";
-  int selectedIndex = 0;
+  final String _participantsTitle = "Участники";
+  int _selectedIndex = 0;
 
-  late DateFormat dateFormat;
-  late DateFormat timeFormat;
   late final DateTime _dtBeg;
   late final DateTime _dtEnd;
 
@@ -33,11 +31,9 @@ class ParticipantsPageState extends State<ParticipantsPage> {
   @override
   void initState() {
     super.initState();
-    dateFormat = new DateFormat.yMMMMd('ru');
-    timeFormat = new DateFormat.Hms('ru');
     final DateTime now = DateTime.now();
-    _dtBeg = DateTime(now.year, now.month, now.day);
-    _dtEnd = DateTime(now.year, now.month, now.day, 23, 59, 59);
+    _dtBeg = CURRENT_DATA_MIN;
+    _dtEnd = CURRENT_DATA_MAX;
   }
 
   @override
@@ -48,12 +44,12 @@ class ParticipantsPageState extends State<ParticipantsPage> {
         title: Container(
           alignment: Alignment.center,
           child: Text(
-            participantsTitle,
+            _participantsTitle,
             style: TextStyle(fontSize: 24),
           ),
         ),
       ),
-      bottomNavigationBar: MainBottomNavigationBar(context, selectedIndex),
+      bottomNavigationBar: MainBottomNavigationBar(context, _selectedIndex),
       body:
       // LayoutBuilder(
       //     builder: (BuildContext context, BoxConstraints viewportConstraints) {
@@ -66,7 +62,7 @@ class ParticipantsPageState extends State<ParticipantsPage> {
                   Container(child:
                     Column(
                       children: [
-                        Text(getIt<DateUtil>().getDateNowInStr(), style: TextStyle(fontSize: 18)),
+                        Text(locator<DateUtil>().getDateNowInStr(), style: TextStyle(fontSize: 18)),
                       ]
                     ),
                   )
@@ -74,7 +70,7 @@ class ParticipantsPageState extends State<ParticipantsPage> {
             Expanded(child:
               ListView(
                 children:
-                  getIt<PersonService>().getPersonProgress(null, _dtBeg, _dtEnd).values.map(
+                  locator<PersonService>().getPersonProgress(null, _dtBeg, _dtEnd).values.map(
                         (personProgress) =>
                         Container(
                           width: MediaQuery.of(context).size.width,
@@ -85,41 +81,7 @@ class ParticipantsPageState extends State<ParticipantsPage> {
                             mainAxisSize: MainAxisSize.max,
                             // crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width / 3,
-                                // alignment: Alignment.center,
-                                child:
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.pushNamed(
-                                      context,
-                                      ParticipantTasksPage.ROUTE_NAME,
-                                      arguments: ParticipantTasksArguments(
-                                        personProgress.person,
-                                        _dtBeg,
-                                        _dtEnd
-                                      ),
-                                    );
-                                  },
-                                  child:
-                                    CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(50),
-                                        child:
-                                          personProgress.person.avaPath != null
-                                            ?
-                                          Image.asset(
-                                            personProgress.person.avaPath!,
-                                          )
-                                            :
-                                          Icon(Icons.person, color: Theme.of(context).colorScheme.primary)
-                                      ),
-                                      radius: 52,
-                                    ),
-                                ),
-                                // padding: EdgeInsets.symmetric(horizontal: 20),
-                              ),
+                              AvatarInList(personProgress.person, _dtBeg, _dtEnd),
                               Container(
                                   width: MediaQuery.of(context).size.width / 3,
                                 // alignment: Alignment.center,
@@ -143,7 +105,6 @@ class ParticipantsPageState extends State<ParticipantsPage> {
                                           // padding: EdgeInsets.only(left: 30),
                                           alignment: Alignment.center,
                                           child:
-                                            personProgress == null ? Text("Нет данных") :
                                             Text(
                                               "Всего баллов: ${personProgress.sumAll}",
                                               style: TextStyle(
@@ -157,7 +118,6 @@ class ParticipantsPageState extends State<ParticipantsPage> {
                                           // padding: EdgeInsets.only(left: 30),
                                           alignment: Alignment.center,
                                           child:
-                                            personProgress == null ? Text("Нет данных") :
                                             Text(
                                               "Сегодня: ${personProgress.sumLocal}",
                                               style: TextStyle(
@@ -180,14 +140,5 @@ class ParticipantsPageState extends State<ParticipantsPage> {
         )
     );
   }
-
-  // Widget _switchDate(bool isShowAll) {
-  //   Widget widget;
-  //   if (isShowAll) {
-  //
-  //   } else {
-  //
-  //   }
-  // }
 
 }

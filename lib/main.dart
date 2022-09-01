@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:score_system/data/dbprovider.dart';
-import 'package:score_system/model/activity.dart';
+import 'package:loggy/loggy.dart';
 import 'package:score_system/screen/activity_choose_screen.dart';
+import 'package:score_system/screen/encyclopedia_screen.dart';
 import 'package:score_system/screen/main_menu_screen.dart';
 import 'package:score_system/screen/participant_add_tasks_screen.dart';
 import 'package:score_system/screen/participant_tasks_screen.dart';
+import 'package:score_system/screen/participants_prize_screen.dart';
 import 'package:score_system/screen/participants_screen.dart';
 import 'package:score_system/screen/wiki/aims_screen.dart';
 import 'package:score_system/screen/wiki/annual_practice_screen.dart';
@@ -18,19 +17,15 @@ import 'package:score_system/screen/wiki/how_use_screen.dart';
 import 'package:score_system/screen/wiki/long_results_screen.dart';
 import 'package:score_system/screen/wiki/resistance_screen.dart';
 import 'package:score_system/screen/wiki/wiki_screen.dart';
-import 'package:score_system/service/person_service.dart';
-import 'package:score_system/util/date_util.dart';
 import 'package:score_system/vocabulary/activity_data.dart';
+import 'package:score_system/vocabulary/constant.dart';
 import 'package:score_system/vocabulary/person_data.dart';
-import 'package:loggy/loggy.dart';
-import 'package:score_system/vocabulary/task_data.dart';
-
-import 'bloc/category_activity_bloc.dart';
-import 'bloc/category_activity_state.dart';
-import 'model/entity.dart';
+import 'current_data.dart';
+import 'locator.dart';
 import 'model/person.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-GetIt getIt = GetIt.instance;
 
 void main() {
   Loggy.initLoggy();
@@ -39,34 +34,14 @@ void main() {
       overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
   setup();
   runApp(
-    MultiBlocProvider(providers: [
-      BlocProvider(
-        create: (context) => CategoryActivityBloc(
-            CategoryActivityPresented(
-                HierarchEntity
-                    .getTopDataWithChildren(getIt<ActivityData>().getData())
-            )
-        ),
-      ),
-    ],
-      child: AppStartWidget()
-    ),
+    AppStartWidget()
   );
 }
 
 void setup() {
   // initialize date formating
   initializeDateFormatting();
-  /**
-   * Register beans
-   */
-  getIt.registerSingleton<PersonService>(PersonService());
-  getIt.registerSingleton<DateUtil>(DateUtil());
-  getIt.registerSingleton<ScoreSystemDbProvider>(ScoreSystemDbProvider());
-  getIt.registerSingleton<ActivityData>(ActivityData());
-  getIt.registerSingleton<PersonData>(PersonData());
-  getIt.registerSingleton<TaskPlanData>(TaskPlanData());
-  getIt.registerSingleton<TaskFactData>(TaskFactData());
+  setupLocator();
 }
 
 class AppStartWidget extends StatelessWidget {
@@ -77,8 +52,11 @@ class AppStartWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (_person == null) {
-      List<Person> persons = getIt<PersonData>().getData();
+      List<Person> persons = locator<PersonData>().getData();
       _person = persons.isEmpty ? null : persons.first;
+    }
+    if (CURRENT_USER == null) {
+      CURRENT_USER = _person;
     }
     return FutureBuilder(
       future: Init.instance.initialize(),
@@ -89,7 +67,17 @@ class AppStartWidget extends StatelessWidget {
         // } else {
           // Loading is done, return the app:
           return MaterialApp(
-              title: 'Бальная система',
+              title: AppLocalizations.of(context)!.appTitle,
+              localizationsDelegates: [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: [
+                Locale('en', ''), // English, no country code
+                Locale('ru', ''), // Russian, no country code
+              ],
               theme: ThemeData(
                 // Define the default brightness and colors.
                 brightness: Brightness.light,
@@ -100,6 +88,7 @@ class AppStartWidget extends StatelessWidget {
                   primary: Color.fromRGBO(245, 209, 121, 1),
                   secondary: Color.fromRGBO(41, 108, 56, 1), // Your accent color
                 ),
+                iconTheme: IconThemeData(color: Color.fromRGBO(245, 209, 121, 1)),
                 scaffoldBackgroundColor: Colors.white,
                 // Define the default font family.
                 fontFamily: 'SfPro',
@@ -175,15 +164,17 @@ class AppStartWidget extends StatelessWidget {
               routes: {
                 '/choose_user': (context) => MainMenuPage(
                     title: 'Выберите трудягу',
-                    btnTitleMap: Map.fromIterable(getIt<PersonData>().getData(), key: (person) => person.fio(), value: (person) => '/person')
+                    btnTitleMap: Map.fromIterable(locator<PersonData>().getData(), key: (person) => person.fio(), value: (person) => '/person')
                 ),
                 ParticipantsPage.ROUTE_NAME: (context) => ParticipantsPage(),
                 ParticipantTasksPage.ROUTE_NAME: (context) => ParticipantTasksPage(),
+                ParticipantPrizePage.ROUTE_NAME: (context) => ParticipantPrizePage(),
+                EncyclopediaPage.ROUTE_NAME: (context) => EncyclopediaPage(),
                 AddParticipantTasksPage.ROUTE_NAME: (context) =>
                   AddParticipantTasksPage(
                     context,
                     _person,
-                    getIt<ActivityData>().getData()
+                    locator<ActivityData>().getData()
                   ),
                 '/person': (context) => MainMenuPage(
                     title: 'Бальная система',
@@ -201,7 +192,7 @@ class AppStartWidget extends StatelessWidget {
                 '/wiki/errors': (context) => WikiErrorsPage(),
                 '/wiki/how_pause': (context) => WikiHowPausePage(),
                 '/wiki/long_results': (context) => WikiLongResultsPage(),
-                ActivityChoosePage.ROUTE_NAME: (context) => ActivityChoosePage(context, null, getIt<ActivityData>().getData()),
+                ActivityChoosePage.ROUTE_NAME: (context) => ActivityChoosePage(context, null, locator<ActivityData>().getData()),
               }
           );
         }
@@ -223,8 +214,8 @@ class Splash extends StatelessWidget {
       lightMode ? const Color(0xffe1f5fe) : const Color(0xff042a49),
       body: Center(
           child: lightMode
-              ? Image.asset('asset/img/intro.png')
-              : Image.asset('asset/img/intro_dark.png')),
+              ? Image.asset('${IMG_PATH}intro.png')
+              : Image.asset('${IMG_PATH}intro_dark.png')),
     );
   }
 }

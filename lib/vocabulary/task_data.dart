@@ -10,6 +10,7 @@ import 'package:loggy/loggy.dart';
 import 'package:score_system/vocabulary/person_data.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../locator.dart';
 import '../main.dart';
 
 class TaskPlanData extends EntitiesData<TaskPlan>{
@@ -172,19 +173,19 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
   List<TaskPlan> _getDbData() {
     List<Map<String, Object?>> rez = [];
     late Database db;
-    final dbOpt = getIt<ScoreSystemDbProvider>().init(); //open database
+    final dbOpt = locator<ScoreSystemDbProvider>().init(); //open database
     dbOpt.then((value) => db = value);
     db.rawQuery('''
           SELECT ${getColumnNames().map((e) => 'A.$e').join(',')} , 
           (SELECT GROUP_CONCAT(B.dtPlan || '-' || B.cnt) FROM ${getChildTableName()} B WHERE B.task_plan_id = A.id LIMIT 1) as schedule, 
-          ${getIt<ActivityData>().getColumnNames().map((e) => 'C.$e as ${getIt<ActivityData>().getTableName()}_$e').join(',')} , 
-          ${getIt<PersonData>().getColumnNames().map((e) => 'D.$e as ${getIt<PersonData>().getTableName()}_$e').join(',')} , 
+          ${locator<ActivityData>().getColumnNames().map((e) => 'C.$e as ${locator<ActivityData>().getTableName()}_$e').join(',')} , 
+          ${locator<PersonData>().getColumnNames().map((e) => 'D.$e as ${locator<PersonData>().getTableName()}_$e').join(',')} , 
           FROM ${getTableName()} A 
           LEFT JOIN ${getChildTableName()} B 
           ON A.id = B.task_plan_id"
-          LEFT JOIN ${getIt<ActivityData>().getTableName()} C 
+          LEFT JOIN ${locator<ActivityData>().getTableName()} C 
           ON A.activity_id = C.id"
-          LEFT JOIN ${getIt<PersonData>().getTableName()} D 
+          LEFT JOIN ${locator<PersonData>().getTableName()} D 
           ON A.person_id = D.id"
         ''')
         .then((values) => rez = values)
@@ -417,16 +418,16 @@ class TaskFactData extends EntitiesData<TaskFact>{
   List<TaskFact> _getDbData() {
     List<Map<String, Object?>> rez = [];
     late Database db;
-    final dbOpt = getIt<ScoreSystemDbProvider>().init(); //open database
+    final dbOpt = locator<ScoreSystemDbProvider>().init(); //open database
     dbOpt.then((value) => db = value);
     db.rawQuery('''
           SELECT ${getColumnNames().map((e) => 'A.$e').join(',')} , 
-          ${getIt<TaskPlanData>().getColumnNames().map((e) => 'C.$e as ${getIt<TaskPlanData>().getTableName()}_$e').join(',')} , 
-          ${getIt<PersonData>().getColumnNames().map((e) => 'D.$e as ${getIt<PersonData>().getTableName()}_$e').join(',')} , 
+          ${locator<TaskPlanData>().getColumnNames().map((e) => 'C.$e as ${locator<TaskPlanData>().getTableName()}_$e').join(',')} , 
+          ${locator<PersonData>().getColumnNames().map((e) => 'D.$e as ${locator<PersonData>().getTableName()}_$e').join(',')} , 
           FROM ${getTableName()} A 
-          LEFT JOIN ${getIt<TaskPlanData>().getTableName()} C 
+          LEFT JOIN ${locator<TaskPlanData>().getTableName()} C 
           ON A.plan_id = C.id"
-          LEFT JOIN ${getIt<PersonData>().getTableName()} D 
+          LEFT JOIN ${locator<PersonData>().getTableName()} D 
           ON A.person_id = D.id"
         ''')
         .then((values) => rez = values)
@@ -468,7 +469,7 @@ class TaskFactData extends EntitiesData<TaskFact>{
           fatherName: map['Person_fatherName'] as String,
           avaPath: map['Person_avaPath'] as String,
         ),
-        taskPlan: getIt<TaskPlanData>().getEntity(map['${getIt<TaskPlanData>().getTableName()}_id'] as int),
+        taskPlan: locator<TaskPlanData>().getEntity(map['${locator<TaskPlanData>().getTableName()}_id'] as int),
         sum: map['sum'] as int,
         cnt: map['cnt'] as int,
     );

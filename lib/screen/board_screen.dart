@@ -108,7 +108,7 @@ class _BoardPageState extends State<BoardPage> implements CreateBoardCallBack,Ge
               Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: TextFormField(
-                  initialValue: CurrentUser.person!.fio(),
+                  initialValue: CURRENT_USER!.fio(),
                   onSaved: (val) => _fio = val!,
                   decoration: InputDecoration(labelText: "ФИО"),
                 ),

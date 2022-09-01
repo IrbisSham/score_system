@@ -1,24 +1,9 @@
 import 'package:intl/intl.dart';
-
+import 'package:score_system/util/date_util.dart';
 import 'model/person.dart';
 
-class CurrentUser {
-  static Person? person;
-}
-
-class LocalStandart {
-
-  final String _locale;
-
-  late DateFormat DATE_FORMAT;
-  late DateFormat TIME_FORMAT;
-
-  LocalStandart(this._locale);
-
-  init() {
-    DATE_FORMAT = DateFormat.yMMMMd(_locale);
-    TIME_FORMAT = DateFormat.Hms(_locale);
-  }
-
-
-}
+Person CURRENT_USER = PERSON_DUMMY;
+DateTime CURRENT_DATA_MIN = DATE_TIME_MIN;
+DateTime CURRENT_DATA_MAX = DATE_TIME_MAX;
+DateFormat CURRENT_DATE_FORMAT = DateFormat.yMMMMd('ru');
+DateFormat CURRENT_TIME_FORMAT = DateFormat.Hms('ru');

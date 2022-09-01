@@ -10,8 +10,12 @@ import 'package:score_system/vocabulary/person_data.dart';
 import 'package:score_system/vocabulary/task_data.dart';
 import 'package:sqflite/sqflite.dart';
 
-import '../main.dart'; //sqflite package
+import '../locator.dart';
+import '../main.dart';
+import '../vocabulary/person_prize_data.dart';
+import '../vocabulary/prize_data.dart'; //sqflite package
 
+@Deprecated('First try version')
 class BallSystDbProvider{
 
   Future<Database> init() async {
@@ -133,69 +137,103 @@ class ScoreSystemDbProvider{
           );
           await db.execute(
             """
-              CREATE TABLE if not exists ${getIt<PersonData>().getTableName()}(
-                ${getIt<PersonData>().getColumnNames()[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
-                ${getIt<PersonData>().getColumnNames()[1]} TEXT,
-                ${getIt<PersonData>().getColumnNames()[2]} TEXT,
-                ${getIt<PersonData>().getColumnNames()[3]} INTEGER REFERENCES Status(id) ON DELETE RESTRICT,
-                ${getIt<PersonData>().getColumnNames()[4]} TEXT,
-                ${getIt<PersonData>().getColumnNames()[5]} TEXT,
-                ${getIt<PersonData>().getColumnNames()[6]} TEXT,
-                ${getIt<PersonData>().getColumnNames()[7]} TEXT,
+              CREATE TABLE if not exists ${locator<PersonData>().getTableName()}(
+                ${locator<PersonData>().getColumnNames()[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
+                ${locator<PersonData>().getColumnNames()[1]} TEXT,
+                ${locator<PersonData>().getColumnNames()[2]} TEXT,
+                ${locator<PersonData>().getColumnNames()[3]} INTEGER REFERENCES Status(id) ON DELETE RESTRICT,
+                ${locator<PersonData>().getColumnNames()[4]} TEXT,
+                ${locator<PersonData>().getColumnNames()[5]} TEXT,
+                ${locator<PersonData>().getColumnNames()[6]} TEXT,
+                ${locator<PersonData>().getColumnNames()[7]} TEXT,
                 CONSTRAINT fk_Person_id unique (id) on conflict ROLLBACK)
             """
           );
           await db.execute(
               """
-              CREATE UNIQUE INDEX if not exists Person_id ON ${getIt<PersonData>().getTableName()} (${getIt<PersonData>().getColumnNames()[0]} ASC);
+              CREATE UNIQUE INDEX if not exists Person_id ON ${locator<PersonData>().getTableName()} (${locator<PersonData>().getColumnNames()[0]} ASC);
             """
           );
           await db.execute(
               """
-            CREATE TABLE ${getIt<ActivityData>().getTableName()}(
-              ${getIt<ActivityData>().getColumnNames()[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
-              ${getIt<ActivityData>().getColumnNames()[1]} TEXT,
-              ${getIt<ActivityData>().getColumnNames()[2]} INTEGER,
-              ${getIt<ActivityData>().getColumnNames()[3]} TEXT,
-              ${getIt<ActivityData>().getColumnNames()[4]} TEXT,
-              ${getIt<ActivityData>().getColumnNames()[5]} INTEGER,
-              ${getIt<ActivityData>().getColumnNames()[6]} INTEGER,
-              ${getIt<ActivityData>().getColumnNames()[7]} INTEGER,
-              ${getIt<ActivityData>().getColumnNames()[8]} TEXT,
+            CREATE TABLE ${locator<ActivityData>().getTableName()}(
+              ${locator<ActivityData>().getColumnNames()[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
+              ${locator<ActivityData>().getColumnNames()[1]} TEXT,
+              ${locator<ActivityData>().getColumnNames()[2]} INTEGER,
+              ${locator<ActivityData>().getColumnNames()[3]} TEXT,
+              ${locator<ActivityData>().getColumnNames()[4]} TEXT,
+              ${locator<ActivityData>().getColumnNames()[5]} INTEGER,
+              ${locator<ActivityData>().getColumnNames()[6]} INTEGER,
+              ${locator<ActivityData>().getColumnNames()[7]} INTEGER,
+              ${locator<ActivityData>().getColumnNames()[8]} TEXT,
               CONSTRAINT fk_Activity_id unique (id) on conflict ROLLBACK)
             """
           );
           await db.execute(
               """
-              CREATE UNIQUE INDEX if not exists Activity_id ON ${getIt<ActivityData>().getTableName()} (${getIt<ActivityData>().getColumnNames()[0]} ASC);
+              CREATE UNIQUE INDEX if not exists Activity_id ON ${locator<ActivityData>().getTableName()} (${locator<ActivityData>().getColumnNames()[0]} ASC);
+            """
+          );
+          await db.execute(
+              """
+            CREATE TABLE ${locator<PrizeData>().getTableName()}(
+              ${locator<PrizeData>().getColumnNames()[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
+              ${locator<PrizeData>().getColumnNames()[1]} TEXT,
+              ${locator<PrizeData>().getColumnNames()[2]} INTEGER,
+              ${locator<PrizeData>().getColumnNames()[3]} TEXT,
+              ${locator<PrizeData>().getColumnNames()[4]} INTEGER,
+              CONSTRAINT fk_Prize_id unique (id) on conflict ROLLBACK)
+            """
+          );
+          await db.execute(
+              """
+              CREATE UNIQUE INDEX if not exists Prize_id ON ${locator<PrizeData>().getTableName()} (${locator<PrizeData>().getColumnNames()[0]} ASC);
+            """
+          );
+          await db.execute(
+              """
+            CREATE TABLE ${locator<PersonPrizeData>().getTableName()}(
+              ${locator<PersonPrizeData>().getColumnNames()[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
+              ${locator<PersonPrizeData>().getColumnNames()[1]} TEXT,
+              ${locator<PersonPrizeData>().getColumnNames()[2]} INTEGER,
+              ${locator<PersonPrizeData>().getColumnNames()[3]} TEXT,
+              ${locator<PersonPrizeData>().getColumnNames()[4]} INTEGER,
+              ${locator<PersonPrizeData>().getColumnNames()[5]} INTEGER,
+              ${locator<PersonPrizeData>().getColumnNames()[6]} INTEGER,
+              CONSTRAINT fk_Person_Prize_id unique (id) on conflict ROLLBACK)
+            """
+          );
+          await db.execute(
+              """
+              CREATE UNIQUE INDEX if not exists PersonPrize_id ON ${locator<PersonPrizeData>().getTableName()} (${locator<PersonPrizeData>().getColumnNames()[0]} ASC);
             """
           );
           await db.execute(
             """
-            CREATE TABLE ${getIt<TaskPlanData>().getTableName()}(
-              ${getIt<TaskPlanData>().getColumnNames()[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
-              ${getIt<TaskPlanData>().getColumnNames()[1]} INTEGER REFERENCES Activity(id) ON DELETE RESTRICT,
-              ${getIt<TaskPlanData>().getColumnNames()[2]} INTEGER REFERENCES Status(id) ON DELETE RESTRICT,
-              ${getIt<TaskPlanData>().getColumnNames()[3]} TEXT,
-              ${getIt<TaskPlanData>().getColumnNames()[4]} TEXT,
-              ${getIt<TaskPlanData>().getColumnNames()[5]} INTEGER REFERENCES Person(id) ON DELETE RESTRICT,
-              ${getIt<TaskPlanData>().getColumnNames()[6]} INTEGER,
+            CREATE TABLE ${locator<TaskPlanData>().getTableName()}(
+              ${locator<TaskPlanData>().getColumnNames()[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
+              ${locator<TaskPlanData>().getColumnNames()[1]} INTEGER REFERENCES Activity(id) ON DELETE RESTRICT,
+              ${locator<TaskPlanData>().getColumnNames()[2]} INTEGER REFERENCES Status(id) ON DELETE RESTRICT,
+              ${locator<TaskPlanData>().getColumnNames()[3]} TEXT,
+              ${locator<TaskPlanData>().getColumnNames()[4]} TEXT,
+              ${locator<TaskPlanData>().getColumnNames()[5]} INTEGER REFERENCES Person(id) ON DELETE RESTRICT,
+              ${locator<TaskPlanData>().getColumnNames()[6]} INTEGER,
               CONSTRAINT fk_TaskPlan_id unique (id) on conflict ROLLBACK)
             """
           );
           await db.execute(
               """
-              CREATE UNIQUE INDEX if not exists TaskPlan_id ON ${getIt<TaskPlanData>().getTableName()} (${getIt<TaskPlanData>().getColumnNames()[0]} ASC);
+              CREATE UNIQUE INDEX if not exists TaskPlan_id ON ${locator<TaskPlanData>().getTableName()} (${locator<TaskPlanData>().getColumnNames()[0]} ASC);
             """
           );
           await db.execute(
             """
             CREATE TABLE TaskPlanSched(
-              ${getIt<TaskPlanData>().getChildColumnNames()[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
-              ${getIt<TaskPlanData>().getChildColumnNames()[1]} INTEGER REFERENCES TaskPlan(id) ON DELETE RESTRICT,
-              ${getIt<TaskPlanData>().getChildColumnNames()[2]} INTEGER,
-              ${getIt<TaskPlanData>().getChildColumnNames()[3]} INTEGER,
-              CONSTRAINT fk_TaskPlanSched_id unique (${getIt<TaskPlanData>().getChildColumnNames()[0]}) on conflict ROLLBACK)
+              ${locator<TaskPlanData>().getChildColumnNames()[0]} INTEGER PRIMARY KEY AUTOINCREMENT,
+              ${locator<TaskPlanData>().getChildColumnNames()[1]} INTEGER REFERENCES TaskPlan(id) ON DELETE RESTRICT,
+              ${locator<TaskPlanData>().getChildColumnNames()[2]} INTEGER,
+              ${locator<TaskPlanData>().getChildColumnNames()[3]} INTEGER,
+              CONSTRAINT fk_TaskPlanSched_id unique (${locator<TaskPlanData>().getChildColumnNames()[0]}) on conflict ROLLBACK)
             """
           );
           await db.execute(

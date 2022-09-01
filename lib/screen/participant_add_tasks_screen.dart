@@ -10,7 +10,7 @@ import 'package:tuple/tuple.dart';
 
 import '../bloc/category_activity_bloc.dart';
 import '../bloc/category_activity_event.dart';
-import '../main.dart';
+import '../locator.dart';
 import '../model/activity.dart';
 import '../vocabulary/person_data.dart';
 import '../widget/add_task_activity_item.dart';
@@ -31,7 +31,7 @@ class AddParticipantTasksPage extends StatefulWidget {
   AddParticipantTasksPage(BuildContext context, Person? person, List<Activity> activities){
     this._ctx = context;
     if (person == null) {
-      List<Person> persons = getIt<PersonData>().getData();
+      List<Person> persons = locator<PersonData>().getData();
       _person = persons.isEmpty ? null : persons.first;
     } else {
       _person = person;

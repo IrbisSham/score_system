@@ -3,10 +3,11 @@ import 'package:score_system/data/dbprovider.dart';
 import 'package:score_system/model/entity.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../locator.dart';
 import '../main.dart';
 import 'constant.dart';
 
-abstract class EntitiesData<T extends HierarchEntity> {
+abstract class EntitiesData<T extends BaseEntity> {
 
   final bool isDbMode;
 
@@ -32,7 +33,7 @@ abstract class EntitiesData<T extends HierarchEntity> {
   T _getDbEntity(int id) {
     Map<String, Object?> rez = {};
     late Database db;
-    final dbOpt = getIt<ScoreSystemDbProvider>().init(); //open database
+    final dbOpt = locator<ScoreSystemDbProvider>().init(); //open database
     dbOpt.then((value) => db = value);
     db.query(getTableName(),
               columns: getColumnNames(),
@@ -47,7 +48,7 @@ abstract class EntitiesData<T extends HierarchEntity> {
   List<T> _getDbData() {
     List<Map<String, Object?>> rez = [];
     late Database db;
-    final dbOpt = getIt<ScoreSystemDbProvider>().init(); //open database
+    final dbOpt = locator<ScoreSystemDbProvider>().init(); //open database
     dbOpt.then((value) => db = value);
     db.query(getTableName(),
               columns: getColumnNames(),
@@ -88,7 +89,7 @@ abstract class EntitiesData<T extends HierarchEntity> {
   int _modifyDbData(T t) {
     int rez = STATUS_EXPIRED;
     late Database db;
-    final dbOpt = getIt<ScoreSystemDbProvider>().init(); //open database
+    final dbOpt = locator<ScoreSystemDbProvider>().init(); //open database
     dbOpt.then((value) => db = value);
     db.update(getTableName(), t.toMapNoId(),
       where: 'id = ?',
@@ -112,7 +113,7 @@ abstract class EntitiesData<T extends HierarchEntity> {
   int _addDbEntity(T t) { //returns number of items inserted as an integer
     int rez = STATUS_EXPIRED;
     late Database db;
-    final dbOpt = getIt<ScoreSystemDbProvider>().init(); //open database
+    final dbOpt = locator<ScoreSystemDbProvider>().init(); //open database
     dbOpt.then((value) => db = value);
     db.insert(getTableName(), t.toMapNoId(),
       conflictAlgorithm: ConflictAlgorithm.rollback, //rollback changes due conflicts
@@ -130,7 +131,7 @@ abstract class EntitiesData<T extends HierarchEntity> {
   int _removeDbEntity(T t) {
     int rez = STATUS_EXPIRED;
     late Database db;
-    final dbOpt = getIt<ScoreSystemDbProvider>().init(); //open database
+    final dbOpt = locator<ScoreSystemDbProvider>().init(); //open database
     dbOpt.then((value) => db = value);
     db.delete(getTableName(), where: 'id = ?', whereArgs: [t.id])
         .then((value) => rez = value)
