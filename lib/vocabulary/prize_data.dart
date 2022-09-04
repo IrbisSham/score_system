@@ -50,7 +50,6 @@ class PrizeData extends EntitiesData<Prize>{
     return Prize(
       id: map['id'] as int,
       name: map['name'] as String,
-      status: map['status'] as int,
       desc: map['desc'] as String,
       sum: map['sum'] as int,
     );

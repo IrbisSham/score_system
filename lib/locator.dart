@@ -6,7 +6,8 @@ import 'package:score_system/vocabulary/person_data.dart';
 import 'package:score_system/vocabulary/person_prize_data.dart';
 import 'package:score_system/vocabulary/prize_data.dart';
 import 'package:score_system/vocabulary/task_data.dart';
-
+import 'bloc/category_activity_bloc.dart';
+import 'api/search_category_activity.dart';
 import 'data/dbprovider.dart';
 
 GetIt locator = GetIt.instance;
@@ -24,4 +25,5 @@ void setupLocator() {
   locator.registerSingleton<TaskFactData>(TaskFactData());
   locator.registerSingleton<PrizeData>(PrizeData());
   locator.registerSingleton<PersonPrizeData>(PersonPrizeData());
+  locator.registerLazySingleton<CategoryActivityBloc>(() => CategoryActivityBloc(CategoryActivityApi()));
 }

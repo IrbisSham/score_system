@@ -12,14 +12,13 @@ class PersonPrize extends BaseEntity {
     this.person = person,
     this.prize = prize,
     this.isGet = isGet,
-    super(id: id, name: name, desc: desc, status: status);
+    super(id: id, name: name, desc: desc);
 
   Map<String,dynamic> toMap() { // used when inserting data to the database
     return <String,dynamic>{
       "id" : id,
       "name" : name,
       "desc" : desc,
-      "status" : status,
       "person" : person,
       "prize" : prize,
       "isGet" : isGet,
@@ -34,7 +33,6 @@ class PersonPrize extends BaseEntity {
     && id == other.id
     && name == other.name
     && desc == other.desc
-    && status == other.status
     && person == other.person
     && prize == other.prize
     && isGet == other.isGet;
@@ -45,13 +43,11 @@ class PersonPrize extends BaseEntity {
     result = 37 * result + id.hashCode;
     result = 37 * result + name.hashCode;
     result = 37 * result + desc.hashCode;
-    result = 37 * result + status.hashCode;
     result = 37 * result + person.hashCode;
     result = 37 * result + prize.hashCode;
     result = 37 * result + isGet.hashCode;
     return result;
   }
-
 }
 
 PersonPrize PERSON_PRIZE_DUMMY = PersonPrize(id: 0, name: DUMMY, person: PERSON_DUMMY, prize: PRIZE_DUMMY);

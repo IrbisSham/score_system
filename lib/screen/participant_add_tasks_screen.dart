@@ -1,35 +1,22 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:score_system/model/entity.dart';
 import 'package:score_system/model/person.dart';
 import 'package:score_system/screen/menu/bottom_menu.dart';
-import 'package:tuple/tuple.dart';
-
-import '../bloc/category_activity_bloc.dart';
-import '../bloc/category_activity_event.dart';
 import '../locator.dart';
 import '../model/activity.dart';
+import '../view/category_activities_view.dart';
 import '../vocabulary/person_data.dart';
-import '../widget/add_task_activity_item.dart';
 
 class AddParticipantTasksPage extends StatefulWidget {
 
-  late BuildContext _ctx;
   late Person? _person;
   late Person person;
-  late List<Activity> _activities;
-  late List<Tuple2<Activity, List<Activity>>> _categoriesWithActivities;
   String _searchStr = "";
   late Activity _activitySelected;
 
   final String participantsTitle = "Поставьте участнику новую задачу";
   static final String ROUTE_NAME = '/participant_add_tasks';
 
-  AddParticipantTasksPage(BuildContext context, Person? person, List<Activity> activities){
-    this._ctx = context;
+  AddParticipantTasksPage(BuildContext context, Person? person){
     if (person == null) {
       List<Person> persons = locator<PersonData>().getData();
       _person = persons.isEmpty ? null : persons.first;
@@ -37,10 +24,6 @@ class AddParticipantTasksPage extends StatefulWidget {
       _person = person;
     }
     this._person = person;
-    this._ctx = context;
-    this._activities = activities;
-    _categoriesWithActivities = HierarchEntity
-        .getTopDataWithChildren(_activities);
   }
 
   @override
@@ -51,7 +34,6 @@ class AddParticipantTasksPage extends StatefulWidget {
 class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
   late TextEditingController searchController;
   int selectedIndex = 2;
-  ValueNotifier<String> _searchStringNotifier = ValueNotifier("");
 
   @override
   void dispose() {
@@ -90,33 +72,12 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
         //     child:
             Column(
                 children: [
-                  Container(
-                    padding: EdgeInsets.only(top: 20, left: 20, right: 20),
-                    child:
-                      TextField(
-                        decoration: InputDecoration(
-                            labelText: "Фраза для поиска",
-                            hintText: "Введите фразу для поиска",
-                            prefixIcon: Icon(Icons.search),
-                            border:
-                              OutlineInputBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(25.0))
-                              )
-                        ),
-                        keyboardType: TextInputType.text,
-                        inputFormatters: [FilteringTextInputFormatter.singleLineFormatter], // Only numbers can be entered
-                        controller: searchController,
-                        onChanged: (value) =>
-                              BlocProvider.of<CategoryActivityBloc>(context)
-                                  .add(SearchWordTyped(value)),
-                      ),
-                  ),
                   Padding(padding: EdgeInsets.symmetric(vertical: 20)),
                   Expanded(child:
                     SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child:
-                        AddTaskActivityItems(),
+                      CategoryActivitiesView(),
                     ),
                   ),
                 ]

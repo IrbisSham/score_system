@@ -5,24 +5,15 @@ class BaseEntity {
   late int id;
   String? name;
   String? desc;
-  late int status;
 
-  BaseEntity({required this.id, this.name, this.desc, required this.status});
+  BaseEntity({required this.id, this.name, this.desc});
 
   Map<String,dynamic> toMap(){ // used when inserting data to the database
     return <String,dynamic>{
       "id" : id,
       "name" : name,
       "desc" : desc,
-      "status" : status,
     };
-  }
-
-  BaseEntity.fromMap(dynamic obj) {
-    this.id = obj['id'];
-    this.name = obj['fio'];
-    this.desc = obj['desc'];
-    this.status = obj['status'];
   }
 
   Map<String,dynamic> toMapNoId() { // used when inserting data to the database
@@ -31,23 +22,31 @@ class BaseEntity {
     return map;
   }
 
+  BaseEntity.fromMap(dynamic obj) {
+    this.id = obj['id'];
+    this.name = obj['fio'];
+    this.desc = obj['desc'];
+  }
+
 }
 
 class HierarchEntity extends BaseEntity {
+  late int status;
   String? parentIdList;
 
   HierarchEntity({required int id, String? name, String? desc, String? parentIdList, int status = 0}) :
+        this.status = status,
         this.parentIdList = parentIdList,
-        super(id: id, name: name, desc: desc, status: status);
+        super(id: id, name: name, desc: desc);
 
 
   Map<String,dynamic> toMap() {
     return <String,dynamic>{
       "id" : id,
       "name" : name,
-      "desc" : desc,
-      "status" : status,
       "parentIdList" : parentIdList,
+      "status" : status,
+      "desc" : desc,
     };
   }
 
@@ -56,7 +55,7 @@ class HierarchEntity extends BaseEntity {
     this.parentIdList = obj['parentIdList'];
   }
 
-  static List<Tuple2<T, List<T>>> getTopDataWithChildrenByWord <T extends HierarchEntity> (List<Tuple2<T, List<T>>> srcList, String searchString) {
+  static Future<List<Tuple2<T, List<T>>>> getTopDataWithChildrenByWord <T extends HierarchEntity> (List<Tuple2<T, List<T>>> srcList, String searchString) async {
     String searchStr = searchString.toLowerCase();
     return srcList
         .map((parentWithChildren) {
@@ -67,7 +66,7 @@ class HierarchEntity extends BaseEntity {
         .toList();
   }
 
-  static List<Tuple2<T, List<T>>> getTopDataWithChildren <T extends HierarchEntity> (List<T> srcList) {
+  static Future<List<Tuple2<T, List<T>>>> getTopDataWithChildren <T extends HierarchEntity> (List<T> srcList) async {
     List<T> categories = srcList
         .where((element) => (element.parentIdList == null || element.parentIdList!.isEmpty))
         .toList();
@@ -87,12 +86,24 @@ class HierarchEntity extends BaseEntity {
 
 class HierarchEntityUtil<T extends HierarchEntity> {
 
-  List<T> getTopData(List<T> srcList) {
+  Future<List<T>> getTopData(List<T> srcList) async {
     return srcList.where((element) => element.parentIdList == null || element.parentIdList!.isEmpty).toList();
   }
 
-  List<T> getChildrenData(T entity, List<T> srcList) {
+  Future<List<T>> getChildrenData(T entity, List<T> srcList) async {
     return srcList.where((element) => element.parentIdList != null && element.parentIdList!.split(STRING_DELIMETER).map((e) => int.parse(e)).contains(entity.id)).toList();
   }
 
+}
+
+typedef CategoryEntities = Tuple2<HierarchEntity, List<HierarchEntity>>;
+
+class CategoryEntityResult {
+  final List<CategoryEntities> items;
+
+  CategoryEntityResult(this.items);
+
+  bool get isPopulated => items.isNotEmpty;
+
+  bool get isEmpty => items.isEmpty;
 }

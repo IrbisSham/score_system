@@ -11,7 +11,7 @@ class AddTaskActivityItems extends StatelessWidget {
   return
     BlocBuilder<CategoryActivityBloc, CategoryActivityState>(
       builder: (context, state) {
-        if (state is CategoryActivityPresented) {
+        if (state is CategoryActivityFull) {
           var items = state.list;
           return
             Column(
@@ -124,5 +124,3 @@ class AddTaskActivityItems extends StatelessWidget {
     );
   }
 }
-
-

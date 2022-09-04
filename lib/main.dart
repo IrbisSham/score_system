@@ -46,38 +46,32 @@ void setup() {
 
 class AppStartWidget extends StatelessWidget {
 
-  Person? _person;
+  late Person _person;
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    if (_person == null) {
-      List<Person> persons = locator<PersonData>().getData();
-      _person = persons.isEmpty ? null : persons.first;
-    }
-    if (CURRENT_USER == null) {
-      CURRENT_USER = _person;
-    }
-    return FutureBuilder(
-      future: Init.instance.initialize(),
-      builder: (context, AsyncSnapshot snapshot) {
-        // Show splash screen while waiting for app resources to load:
-        // if (snapshot.connectionState == ConnectionState.waiting) {
-        //   return const MaterialApp(home: Splash());
-        // } else {
-          // Loading is done, return the app:
+    List<Person> persons = locator<PersonData>().getData();
+    _person = persons.isEmpty ? PERSON_DUMMY : persons.first;
+    CURRENT_USER = _person;
+    // return FutureBuilder(
+    //   future: Init.instance.initialize(),
+    //   builder: (context, AsyncSnapshot snapshot) {
+    //     // Show splash screen while waiting for app resources to load:
+    //     // if (snapshot.connectionState == ConnectionState.waiting) {
+    //     //   return const MaterialApp(home: Splash());
+    //     // } else {
+    //       // Loading is done, return the app:
           return MaterialApp(
-              title: AppLocalizations.of(context)!.appTitle,
-              localizationsDelegates: [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: [
-                Locale('en', ''), // English, no country code
-                Locale('ru', ''), // Russian, no country code
-              ],
+              onGenerateTitle: (context) =>
+                AppLocalizations.of(context)!.appTitle,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              // supportedLocales: [
+              //   Locale('en', ''), // English, no country code
+              //   Locale('ru', ''), // Russian, no country code
+              // ],
+              locale: Locale('ru'),
               theme: ThemeData(
                 // Define the default brightness and colors.
                 brightness: Brightness.light,
@@ -174,7 +168,6 @@ class AppStartWidget extends StatelessWidget {
                   AddParticipantTasksPage(
                     context,
                     _person,
-                    locator<ActivityData>().getData()
                   ),
                 '/person': (context) => MainMenuPage(
                     title: 'Бальная система',
@@ -192,14 +185,34 @@ class AppStartWidget extends StatelessWidget {
                 '/wiki/errors': (context) => WikiErrorsPage(),
                 '/wiki/how_pause': (context) => WikiHowPausePage(),
                 '/wiki/long_results': (context) => WikiLongResultsPage(),
-                ActivityChoosePage.ROUTE_NAME: (context) => ActivityChoosePage(context, null, locator<ActivityData>().getData()),
+                // ActivityChoosePage.ROUTE_NAME: (context) => ActivityChoosePage(context, null, locator<ActivityData>().getData()),
               }
           );
-        }
-      // },
-    );
   }
 
+}
+
+class HomePag extends StatefulWidget {
+  const HomePag({Key? key}) : super(key: key);
+
+  @override
+  State<HomePag> createState() => _HomePagState();
+}
+
+class _HomePagState extends State<HomePag> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          children: [
+            Text(AppLocalizations.of(context)!.appTitle),
+            // Txt(text: AppLocalizations.of(context)?.translate('help'))
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class Splash extends StatelessWidget {

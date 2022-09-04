@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
 abstract class BlocBase {
@@ -52,13 +51,12 @@ abstract class BlocEventStateBase<BlocEvent, BlocState> implements BlocBase {
 
   @override
   void dispose() {
-    _eventController?.close();
-    _stateController?.close();
+    _eventController.close();
+    _stateController.close();
   }
 
-  final StreamController<BlocEvent> _eventController =
-  StreamController<BlocEvent>();
+  final StreamController<BlocEvent> _eventController = StreamController<BlocEvent>();
 
-  final BehaviorSubject<BlocState> _stateController =
-  BehaviorSubject<BlocState>();
+  final BehaviorSubject<BlocState> _stateController = BehaviorSubject<BlocState>();
+
 }
