@@ -16,7 +16,7 @@ class AddParticipantTasksPage extends StatefulWidget {
   final String participantsTitle = "Поставьте участнику новую задачу";
   static final String ROUTE_NAME = '/participant_add_tasks';
 
-  AddParticipantTasksPage(BuildContext context, Person? person){
+  AddParticipantTasksPage(BuildContext context, Person? person) {
     if (person == null) {
       List<Person> persons = locator<PersonData>().getData();
       _person = persons.isEmpty ? null : persons.first;

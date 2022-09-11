@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:score_system/bloc/category_activity_bloc.dart';
 import 'package:score_system/bloc/category_activity_state.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../locator.dart';
 import '../stream/custom_stream_builder.dart';
 import '../widget/column_spacer.dart';
@@ -33,18 +34,19 @@ class _CategoryActivitiesViewState extends State<CategoryActivitiesView> {
         final state = model.state;
         if (state == States.loading) {
           return const _Loading();
-        } else if (state == States.empty || state == States.noTerm) {
+        } else if (state == States.empty) {
           return const _Empty();
         } else if (state == States.error) {
           return const _Error();
+        } else if (state == States.init) {
+          return const _Init();
         } else if (state == States.populated) {
           // If accesed the state here, throws an error
           return const _DisplayWidget();
         }
-
         return const _Internal();
       },
-      initialData: CategoryActivityNoTerm(),
+      initialData: CategoryActivityInit(CategoryActivityBloc.INIT_CATEGORY_ENTITY_RESULT),
       stream: categoryActivityBloc.state,
     );
   }
@@ -90,6 +92,24 @@ class _Loading extends StatelessWidget {
   }
 }
 
+class _Init extends StatelessWidget {
+  const _Init({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final state = Provider.of<CategoryActivityState>(context);
+    final results = (state as CategoryActivityInit).result;
+
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _Internal(),
+          CategoryActivitiesResultWidget(items: results.items)],
+      ),
+    );
+  }
+}
+
 class _DisplayWidget extends StatelessWidget {
   const _DisplayWidget({Key? key}) : super(key: key);
 
@@ -114,12 +134,11 @@ class _Internal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = locator<CategoryActivityBloc>();
-
     return Center(
       child: TextField(
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           border: OutlineInputBorder(),
-          hintText: 'Search Category Activities...',
+          hintText: '${Localization.loc.searchCategoryActivities}...',
         ),
         style: const TextStyle(
           fontSize: 36.0,

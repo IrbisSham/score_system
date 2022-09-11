@@ -55,43 +55,43 @@ class HierarchEntity extends BaseEntity {
     this.parentIdList = obj['parentIdList'];
   }
 
-  static Future<List<Tuple2<T, List<T>>>> getTopDataWithChildrenByWord <T extends HierarchEntity> (List<Tuple2<T, List<T>>> srcList, String searchString) async {
-    String searchStr = searchString.toLowerCase();
-    return srcList
-        .map((parentWithChildren) {
-          T parent = parentWithChildren.item1;
-          List<T> children = parentWithChildren.item2.where((child) => searchStr.isEmpty ? true : child.name!.toLowerCase().contains(searchStr)).toList();
-          return Tuple2(parent, children);
-        })
-        .toList();
-  }
-
-  static Future<List<Tuple2<T, List<T>>>> getTopDataWithChildren <T extends HierarchEntity> (List<T> srcList) async {
-    List<T> categories = srcList
-        .where((element) => (element.parentIdList == null || element.parentIdList!.isEmpty))
-        .toList();
-    return categories
-        .map((category) {
-          List<T> children = srcList
-              .where((element) => (element.parentIdList != null && element.parentIdList!.split(STRING_DELIMETER).map((e) => int.parse(e)).contains(category.id))
-          )
-              .toList();
-          return Tuple2(category, children);
-        }
-        )
-      .toList();
-  }
-
 }
 
 class HierarchEntityUtil<T extends HierarchEntity> {
 
-  Future<List<T>> getTopData(List<T> srcList) async {
+  List<T> getTopData(List<T> srcList) {
     return srcList.where((element) => element.parentIdList == null || element.parentIdList!.isEmpty).toList();
   }
 
-  Future<List<T>> getChildrenData(T entity, List<T> srcList) async {
+  List<T> getChildrenData(T entity, List<T> srcList) {
     return srcList.where((element) => element.parentIdList != null && element.parentIdList!.split(STRING_DELIMETER).map((e) => int.parse(e)).contains(entity.id)).toList();
+  }
+
+  List<Tuple2<T, List<T>>> getTopDataWithChildrenByWord (List<Tuple2<T, List<T>>> srcList, String searchString) {
+    String searchStr = searchString.toLowerCase();
+    return srcList
+        .map((parentWithChildren) {
+      T parent = parentWithChildren.item1;
+      List<T> children = parentWithChildren.item2.where((child) => searchStr.isEmpty ? true : child.name!.toLowerCase().contains(searchStr)).toList();
+      return Tuple2(parent, children);
+    })
+        .toList();
+  }
+
+  List<Tuple2<T, List<T>>> getTopDataWithChildren (List<T> srcList) {
+    List<T> categories = srcList
+        .where((element) => (element.parentIdList == null || element.parentIdList!.isEmpty))
+        .toList();
+    return categories
+      .map((category) {
+        List<T> children = srcList
+            .where((element) => (element.parentIdList != null && element.parentIdList!.split(STRING_DELIMETER).map((e) => int.parse(e)).contains(category.id))
+        )
+            .toList();
+        return Tuple2(category, children);
+      }
+      )
+      .toList();
   }
 
 }

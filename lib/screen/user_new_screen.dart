@@ -39,7 +39,7 @@ class UserNewPageState extends State<UserNewPage> {
           title: CURRENT_USER != PERSON_DUMMY ? Container(
             alignment: Alignment.center,
             child: Text(
-              AppLocalizations.of(context)!.userNewScreenTitle,
+              Localization.loc.userNewScreenTitle,
               style:
               TextStyle(fontSize: 24,
                 color: Theme
@@ -62,7 +62,7 @@ class UserNewPageState extends State<UserNewPage> {
                       controller: _fioController,
                       decoration: InputDecoration(
                         border: UnderlineInputBorder(),
-                        labelText: AppLocalizations.of(context)!.userNameTitle,
+                        labelText: Localization.loc.userNameTitle,
                       ),
                     ),
                     Padding(padding: EdgeInsets.only(top: 20)),
@@ -71,13 +71,13 @@ class UserNewPageState extends State<UserNewPage> {
                       controller: _emailController,
                       decoration: InputDecoration(
                         border: UnderlineInputBorder(),
-                        labelText: AppLocalizations.of(context)!.emailNameTitle,
+                        labelText: Localization.loc.emailNameTitle,
                       ),
                     ),
                     Padding(padding: EdgeInsets.only(top: 30)),
                     Row(
                       children: [
-                        Text(AppLocalizations.of(context)!.userNewScreenParticipation),
+                        Text(Localization.loc.userNewScreenParticipation),
                         Switch(
                           onChanged: _toggleSwitch,
                           value: _isParticipate,
@@ -86,7 +86,7 @@ class UserNewPageState extends State<UserNewPage> {
                           inactiveThumbColor: Colors.white,
                           inactiveTrackColor: Color.fromRGBO(120, 120, 128, 1),
                         ),
-                        Text(AppLocalizations.of(context)!.userNewScreenPartDesc,
+                        Text(Localization.loc.userNewScreenPartDesc,
                           style:
                           TextStyle(
                             color: Color.fromRGBO(60, 60, 67, 0.6),
@@ -101,7 +101,7 @@ class UserNewPageState extends State<UserNewPage> {
                             _email = _emailController.value.text;
                             _storeInBase(_fio, _email);
                           },
-                          child: Text(AppLocalizations.of(context)!.buttonReady),
+                          child: Text(Localization.loc.buttonReady),
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -142,14 +142,14 @@ class UserNewPageState extends State<UserNewPage> {
         r"{0,253}[a-zA-Z0-9])?)*$";
     RegExp regex = RegExp(pattern);
     if (value == null || value.isEmpty || !regex.hasMatch(value))
-      return AppLocalizations.of(context)!.emailNameValidatorMessage;
+      return Localization.loc.emailNameValidatorMessage;
     else
       return null;
   }
 
   // TODO: Register on Server
   Future _registerOnServer (String fio, String email) async {
-    throw UnsupportedError(AppLocalizations.of(context)!.unsupportedError);
+    throw UnsupportedError(Localization.loc.unsupportedError);
   }
 
   void _storeInBase(String fio, String email) {

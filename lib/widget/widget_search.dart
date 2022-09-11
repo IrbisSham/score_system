@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../api/search_category_activity.dart';
+import 'package:score_system/model/entity.dart';
 
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({Key? key}) : super(key: key);
@@ -53,7 +52,7 @@ class SearchErrorWidget extends StatelessWidget {
 }
 
 class CategoryActivitiesResultWidget extends StatelessWidget {
-  final List<CategoryActivities> items;
+  final List<CategoryEntities> items;
 
   const CategoryActivitiesResultWidget({Key? key, required this.items}) : super(key: key);
 

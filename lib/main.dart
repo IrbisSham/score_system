@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:loggy/loggy.dart';
-import 'package:score_system/screen/activity_choose_screen.dart';
 import 'package:score_system/screen/encyclopedia_screen.dart';
 import 'package:score_system/screen/main_menu_screen.dart';
 import 'package:score_system/screen/participant_add_tasks_screen.dart';
@@ -17,14 +16,12 @@ import 'package:score_system/screen/wiki/how_use_screen.dart';
 import 'package:score_system/screen/wiki/long_results_screen.dart';
 import 'package:score_system/screen/wiki/resistance_screen.dart';
 import 'package:score_system/screen/wiki/wiki_screen.dart';
-import 'package:score_system/vocabulary/activity_data.dart';
 import 'package:score_system/vocabulary/constant.dart';
 import 'package:score_system/vocabulary/person_data.dart';
+
 import 'current_data.dart';
 import 'locator.dart';
 import 'model/person.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 
 void main() {
@@ -38,10 +35,8 @@ void main() {
   );
 }
 
-void setup() {
-  // initialize date formating
-  initializeDateFormatting();
-  setupLocator();
+Future<void> setup() async {
+  await setupLocator();
 }
 
 class AppStartWidget extends StatelessWidget {
@@ -51,6 +46,7 @@ class AppStartWidget extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    Localization.init(context);
     List<Person> persons = locator<PersonData>().getData();
     _person = persons.isEmpty ? PERSON_DUMMY : persons.first;
     CURRENT_USER = _person;
@@ -64,13 +60,13 @@ class AppStartWidget extends StatelessWidget {
     //       // Loading is done, return the app:
           return MaterialApp(
               onGenerateTitle: (context) =>
-                AppLocalizations.of(context)!.appTitle,
+              Localization.loc.appTitle,
               localizationsDelegates: AppLocalizations.localizationsDelegates,
-              supportedLocales: AppLocalizations.supportedLocales,
-              // supportedLocales: [
-              //   Locale('en', ''), // English, no country code
-              //   Locale('ru', ''), // Russian, no country code
-              // ],
+              // supportedLocales: AppLocalizations.supportedLocales,
+              supportedLocales: [
+                Locale('en', ''), // English, no country code
+                Locale('ru', ''), // Russian, no country code
+              ],
               locale: Locale('ru'),
               theme: ThemeData(
                 // Define the default brightness and colors.
@@ -192,28 +188,28 @@ class AppStartWidget extends StatelessWidget {
 
 }
 
-class HomePag extends StatefulWidget {
-  const HomePag({Key? key}) : super(key: key);
-
-  @override
-  State<HomePag> createState() => _HomePagState();
-}
-
-class _HomePagState extends State<HomePag> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            Text(AppLocalizations.of(context)!.appTitle),
-            // Txt(text: AppLocalizations.of(context)?.translate('help'))
-          ],
-        ),
-      ),
-    );
-  }
-}
+// class HomePag extends StatefulWidget {
+//   const HomePag({Key? key}) : super(key: key);
+//
+//   @override
+//   State<HomePag> createState() => _HomePagState();
+// }
+//
+// class _HomePagState extends State<HomePag> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: Center(
+//         child: Column(
+//           children: [
+//             Text(AppLocalizations.of(context)!.appTitle),
+//             // Txt(text: AppLocalizations.of(context)?.translate('help'))
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class Splash extends StatelessWidget {
   const Splash({Key? key}) : super(key: key);

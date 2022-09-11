@@ -5,10 +5,12 @@ import 'package:score_system/vocabulary/constant.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../locator.dart';
+
 class EncyclopediaPage extends StatelessWidget {
   
   static final String ROUTE_NAME = '/encyclopedia';
-  int _selectedIndex = 0;
+  int _selectedIndex = 3;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,7 @@ class EncyclopediaPage extends StatelessWidget {
           title: Container(
             alignment: Alignment.center,
             child: Text(
-              AppLocalizations.of(context)!.encyclopediaScreenTitle,
+              Localization.loc.encyclopediaScreenTitle,
               style:
               TextStyle(fontSize: 24,
                 color: Theme
@@ -40,7 +42,7 @@ class EncyclopediaPage extends StatelessWidget {
               padding: EdgeInsets.only(top: 20, bottom: 20),
               child:
               Text(
-                  AppLocalizations.of(context)!.encyclopediaTheme,
+                  Localization.loc.encyclopediaTheme,
                   style: TextStyle(fontSize: 24)),
             ),
             Card(
@@ -54,14 +56,14 @@ class EncyclopediaPage extends StatelessWidget {
                       ),
                       title:
                       Text(
-                        AppLocalizations.of(context)!.encyclopediaPunkt1Title,
+                        Localization.loc.encyclopediaPunkt1Title,
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Flexible(
                       child: Text(
-                          AppLocalizations.of(context)!.encyclopediaPunkt1Text),
+                          Localization.loc.encyclopediaPunkt1Text),
                     ),
                     ListTile(
                       leading:
@@ -74,14 +76,14 @@ class EncyclopediaPage extends StatelessWidget {
                       ),
                       title:
                       Text(
-                        AppLocalizations.of(context)!.encyclopediaPunkt2Title,
+                        Localization.loc.encyclopediaPunkt2Title,
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Flexible(
                       child: Text(
-                          AppLocalizations.of(context)!.encyclopediaPunkt2Text),
+                          Localization.loc.encyclopediaPunkt2Text),
                     ),
                     ListTile(
                       leading:
@@ -94,14 +96,14 @@ class EncyclopediaPage extends StatelessWidget {
                       ),
                       title:
                       Text(
-                        AppLocalizations.of(context)!.encyclopediaPunkt3Title,
+                        Localization.loc.encyclopediaPunkt3Title,
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Flexible(
                       child: Text(
-                          AppLocalizations.of(context)!.encyclopediaPunkt3Text),
+                          Localization.loc.encyclopediaPunkt3Text),
                     ),
                     ListTile(
                       leading:
@@ -114,14 +116,14 @@ class EncyclopediaPage extends StatelessWidget {
                       ),
                       title:
                       Text(
-                        AppLocalizations.of(context)!.encyclopediaPunkt4Title,
+                        Localization.loc.encyclopediaPunkt4Title,
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Flexible(
                       child: Text(
-                          AppLocalizations.of(context)!.encyclopediaPunkt4Text),
+                          Localization.loc.encyclopediaPunkt4Text),
                     ),
                     ListTile(
                       leading:
@@ -134,14 +136,14 @@ class EncyclopediaPage extends StatelessWidget {
                       ),
                       title:
                       Text(
-                        AppLocalizations.of(context)!.encyclopediaPunkt5Title,
+                        Localization.loc.encyclopediaPunkt5Title,
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Flexible(
                       child: Text(
-                          AppLocalizations.of(context)!.encyclopediaPunkt5Text),
+                          Localization.loc.encyclopediaPunkt5Text),
                     ),
                     ListTile(
                       leading:
@@ -154,14 +156,14 @@ class EncyclopediaPage extends StatelessWidget {
                       ),
                       title:
                       Text(
-                        AppLocalizations.of(context)!.encyclopediaPunkt6Title,
+                        Localization.loc.encyclopediaPunkt6Title,
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ),
                     Flexible(
                       child: Text(
-                          AppLocalizations.of(context)!.encyclopediaPunkt6Text),
+                          Localization.loc.encyclopediaPunkt6Text),
                     ),
                   ],
                 )

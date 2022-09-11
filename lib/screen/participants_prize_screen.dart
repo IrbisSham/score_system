@@ -15,7 +15,7 @@ class ParticipantPrizePage extends StatelessWidget {
   static final String ROUTE_NAME = '/participants/prize';
 
   final String successTitle = "Успехи";
-  int selectedIndex = 0;
+  int selectedIndex = 1;
 
   late final DateTime _dtBeg;
   late final DateTime _dtEnd;

@@ -26,5 +26,11 @@
   "emailNameTitle": "Enter your email",
   "emailNameValidatorMessage": "Enter a valid email address",
   "buttonReady": "Ready",
-  "unsupportedError": "Not realised yet"
+  "unsupportedError": "Not realised yet",
+  "searchCategoryActivities": "Search Activities",
+  "menuTasks": "Tasks",
+  "menuSuccess": "Success",
+  "menuAdd": "Add",
+  "menuEncyclopedia": "Encyclopedia",
+  "menuSettings": "Settings"
 }

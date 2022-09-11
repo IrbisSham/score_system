@@ -23,5 +23,11 @@
   "emailNameTitle": "Введите вашу почту",
   "emailNameValidatorMessage": "Введите корректный почтовый адрес",
   "buttonReady": "Готово",
-  "unsupportedError": "Еще не реализовано"
+  "unsupportedError": "Еще не реализовано",
+  "searchCategoryActivities": "Поиск активностей",
+  "menuTasks": "Задачи",
+  "menuSuccess": "Успехи",
+  "menuAdd": "Добавить",
+  "menuEncyclopedia": "Энциклопедия",
+  "menuSettings": "Настройки"
 }

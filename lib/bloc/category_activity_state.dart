@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
 import '../api/search_category_activity.dart';
+import '../model/entity.dart';
 import 'bloc_event_state.component.dart';
 
 enum States {
-  noTerm,
+  init,
   error,
   loading,
   populated,
@@ -19,10 +20,6 @@ class CategoryActivityState extends BlocState {
 
 }
 
-class CategoryActivityNoTerm extends CategoryActivityState {
-  CategoryActivityNoTerm() : super(state: States.noTerm);
-}
-
 class CategoryActivityError extends CategoryActivityState {
   CategoryActivityError() : super(state: States.error);
 }
@@ -31,9 +28,17 @@ class CategoryActivityLoading extends CategoryActivityState {
   CategoryActivityLoading() : super(state: States.loading);
 }
 
+class CategoryActivityInit extends CategoryActivityState {
+
+  final CategoryEntityResult result;
+
+  CategoryActivityInit(this.result) : super(state: States.init);
+
+}
+
 class CategoryActivityPopulated extends CategoryActivityState {
 
-  final CategoryActivityResult result;
+  final CategoryEntityResult result;
 
   CategoryActivityPopulated(this.result) : super(state: States.populated);
 
