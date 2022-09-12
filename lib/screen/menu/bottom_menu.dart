@@ -5,6 +5,7 @@ import '../../locator.dart';
 import '../../navigation/pass_arguments.dart';
 import '../encyclopedia_screen.dart';
 import '../participant_tasks_screen.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class BottomMenuItem {
   final int index;
@@ -24,11 +25,11 @@ enum MENU_LABELS {
 extension MENU_LABELS_Extension on MENU_LABELS {
 
   static final labels = {
-    MENU_LABELS.TASKS: BottomMenuItem(0, Localization.loc.menuTasks, Icon(Icons.list)),
-    MENU_LABELS.SUCCESS: BottomMenuItem(1, Localization.loc.menuSuccess, Icon(Icons.wine_bar)),
-    MENU_LABELS.ADD: BottomMenuItem(2, Localization.loc.menuAdd, Icon(Icons.add_circle_outline_rounded)),
-    MENU_LABELS.ENCYCLOPEDIA: BottomMenuItem(3, Localization.loc.menuEncyclopedia, Icon(Icons.help)),
-    MENU_LABELS.SETTINGS: BottomMenuItem(3, Localization.loc.menuSettings, Icon(Icons.settings)),
+    MENU_LABELS.TASKS: BottomMenuItem(0, 'BottomMenu.Tasks'.tr(), Icon(Icons.list)),
+    MENU_LABELS.SUCCESS: BottomMenuItem(1, 'BottomMenu.Success'.tr(), Icon(Icons.wine_bar)),
+    MENU_LABELS.ADD: BottomMenuItem(2, 'BottomMenu.Add'.tr(), Icon(Icons.add_circle_outline_rounded)),
+    MENU_LABELS.ENCYCLOPEDIA: BottomMenuItem(3, 'BottomMenu.Encyclopedia'.tr(), Icon(Icons.help)),
+    MENU_LABELS.SETTINGS: BottomMenuItem(3, 'BottomMenu.Settings'.tr(), Icon(Icons.settings)),
   };
 
   int get index => labels[this]!.index;

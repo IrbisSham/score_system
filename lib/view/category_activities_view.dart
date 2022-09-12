@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:score_system/bloc/category_activity_bloc.dart';
 import 'package:score_system/bloc/category_activity_state.dart';
-
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../locator.dart';
 import '../stream/custom_stream_builder.dart';
 import '../widget/column_spacer.dart';
 import '../widget/widget_search.dart';
-
+import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart' show Provider;
 
 class CategoryActivitiesView extends StatefulWidget {
@@ -138,7 +136,7 @@ class _Internal extends StatelessWidget {
       child: TextField(
         decoration: InputDecoration(
           border: OutlineInputBorder(),
-          hintText: '${Localization.loc.searchCategoryActivities}...',
+          hintText: 'CategoryActivitiesView.Hint'.tr(),
         ),
         style: const TextStyle(
           fontSize: 36.0,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'generated/codegen_loader.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:loggy/loggy.dart';
 import 'package:score_system/screen/encyclopedia_screen.dart';
 import 'package:score_system/screen/main_menu_screen.dart';
@@ -18,7 +19,6 @@ import 'package:score_system/screen/wiki/resistance_screen.dart';
 import 'package:score_system/screen/wiki/wiki_screen.dart';
 import 'package:score_system/vocabulary/constant.dart';
 import 'package:score_system/vocabulary/person_data.dart';
-
 import 'current_data.dart';
 import 'locator.dart';
 import 'model/person.dart';
@@ -31,22 +31,27 @@ void main() {
       overlays: [SystemUiOverlay.bottom, SystemUiOverlay.top]);
   setup();
   runApp(
-    AppStartWidget()
+    EasyLocalization(
+        supportedLocales: [Locale('en', 'US'), Locale('ru', 'RU')],
+        path: 'asset/translation', // <-- change the path of the translation files
+        fallbackLocale: Locale('en', 'US'),
+        assetLoader: CodegenLoader(),
+        child: AppStartWidget()
+    ),
   );
 }
 
 Future<void> setup() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   await setupLocator();
 }
 
 class AppStartWidget extends StatelessWidget {
-
   late Person _person;
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    Localization.init(context);
     List<Person> persons = locator<PersonData>().getData();
     _person = persons.isEmpty ? PERSON_DUMMY : persons.first;
     CURRENT_USER = _person;
@@ -59,15 +64,10 @@ class AppStartWidget extends StatelessWidget {
     //     // } else {
     //       // Loading is done, return the app:
           return MaterialApp(
-              onGenerateTitle: (context) =>
-              Localization.loc.appTitle,
-              localizationsDelegates: AppLocalizations.localizationsDelegates,
-              // supportedLocales: AppLocalizations.supportedLocales,
-              supportedLocales: [
-                Locale('en', ''), // English, no country code
-                Locale('ru', ''), // Russian, no country code
-              ],
-              locale: Locale('ru'),
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
+              title: 'AppTitle'.tr(),
               theme: ThemeData(
                 // Define the default brightness and colors.
                 brightness: Brightness.light,

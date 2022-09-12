@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:score_system/current_data.dart';
 import 'package:score_system/vocabulary/person_data.dart';
 import '../locator.dart';

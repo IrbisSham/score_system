@@ -10,8 +10,6 @@ import 'package:score_system/vocabulary/task_data.dart';
 import 'bloc/category_activity_bloc.dart';
 import 'api/search_category_activity.dart';
 import 'data/dbprovider.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 GetIt locator = GetIt.instance;
 
@@ -33,10 +31,4 @@ Future<void> setupLocator() async {
   CategoryActivityApi categoryActivityApi = locator<CategoryActivityApi>();
   CategoryEntityResult initCategoryEntityResult = await categoryActivityApi.search('');
   locator.registerLazySingleton<CategoryActivityBloc>(() => CategoryActivityBloc(categoryActivityApi, initCategoryEntityResult));
-}
-
-class Localization {
-  static late AppLocalizations loc;
-
-  static void init(BuildContext context) => loc = AppLocalizations.of(context)!;
 }
