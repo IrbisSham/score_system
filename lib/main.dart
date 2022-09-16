@@ -67,7 +67,7 @@ class AppStartWidget extends StatelessWidget {
               localizationsDelegates: context.localizationDelegates,
               supportedLocales: context.supportedLocales,
               locale: context.locale,
-              title: 'AppTitle'.tr(),
+              onGenerateTitle:  (BuildContext context) => 'AppTitle'.tr(),
               theme: ThemeData(
                 // Define the default brightness and colors.
                 brightness: Brightness.light,
@@ -150,7 +150,7 @@ class AppStartWidget extends StatelessWidget {
               //       'results_month': 'Результаты \n за \n месяц',
               //     }
               // ),
-              initialRoute: AddParticipantTasksPage.ROUTE_NAME,
+              initialRoute: EncyclopediaPage.ROUTE_NAME,
               routes: {
                 '/choose_user': (context) => MainMenuPage(
                     title: 'Выберите трудягу',
