@@ -150,7 +150,7 @@ class AppStartWidget extends StatelessWidget {
               //       'results_month': 'Результаты \n за \n месяц',
               //     }
               // ),
-              initialRoute: EncyclopediaPage.ROUTE_NAME,
+              initialRoute: ParticipantPrizePage.ROUTE_NAME,
               routes: {
                 '/choose_user': (context) => MainMenuPage(
                     title: 'Выберите трудягу',
@@ -173,43 +173,12 @@ class AppStartWidget extends StatelessWidget {
                       'Результаты' : '/results_month',
                       'База \n знаний' : '/wiki',
                     }),
-                '/wiki': (context) => WikiPage(),
-                '/wiki/annual_practice': (context) => WikiAnnualPracticePage(),
-                '/wiki/how_use': (context) => WikiHowUsePracticePage(),
-                '/wiki/aims': (context) => WikiAimsPage(),
-                '/wiki/resistance': (context) => WikiResistancePage(),
-                '/wiki/errors': (context) => WikiErrorsPage(),
-                '/wiki/how_pause': (context) => WikiHowPausePage(),
-                '/wiki/long_results': (context) => WikiLongResultsPage(),
                 // ActivityChoosePage.ROUTE_NAME: (context) => ActivityChoosePage(context, null, locator<ActivityData>().getData()),
               }
           );
   }
 
 }
-
-// class HomePag extends StatefulWidget {
-//   const HomePag({Key? key}) : super(key: key);
-//
-//   @override
-//   State<HomePag> createState() => _HomePagState();
-// }
-//
-// class _HomePagState extends State<HomePag> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Center(
-//         child: Column(
-//           children: [
-//             Text(AppLocalizations.of(context)!.appTitle),
-//             // Txt(text: AppLocalizations.of(context)?.translate('help'))
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class Splash extends StatelessWidget {
   const Splash({Key? key}) : super(key: key);
