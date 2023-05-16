@@ -1,4 +1,3 @@
-import 'package:score_system/model/activity.dart';
 import 'package:score_system/model/prize.dart';
 import 'package:score_system/vocabulary/abstract_list_voc.dart';
 import 'package:score_system/vocabulary/constant.dart';
@@ -28,11 +27,6 @@ class PrizeData extends EntitiesData<Prize>{
   @override
   List<Prize> getLocalData() {
     return _localData;
-  }
-
-  @override
-  void _setLocalData(List<Prize> data){
-    _localData = data;
   }
 
   @override

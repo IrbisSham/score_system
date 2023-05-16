@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:score_system/model/entity.dart';
 
+import '../model/person.dart';
+import '../navigation/pass_arguments.dart';
+import '../screen/participant_add_task_schedule_screen.dart';
+
 class LoadingWidget extends StatelessWidget {
   const LoadingWidget({Key? key}) : super(key: key);
 
@@ -52,9 +56,10 @@ class SearchErrorWidget extends StatelessWidget {
 }
 
 class CategoryActivitiesResultWidget extends StatelessWidget {
+  final Person person;
   final List<CategoryEntities> items;
 
-  const CategoryActivitiesResultWidget({Key? key, required this.items}) : super(key: key);
+  const CategoryActivitiesResultWidget({Key? key, required this.person, required this.items}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +92,17 @@ class CategoryActivitiesResultWidget extends StatelessWidget {
                           categoryWithActivities.item2
                               .map((activity) =>
                               InkWell(
-                                onTap: () => {},
+                                onTap: () => {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AddParticipantTaskSchedulePage.ROUTE_NAME,
+                                    arguments:
+                                      PersonHierarchEntityArguments(
+                                          person,
+                                          activity,
+                                        ),
+                                  )
+                                },
                                 splashColor: Theme.of(context).primaryColor,
                                 borderRadius: BorderRadius.circular(15),
                                 child:
@@ -117,35 +132,36 @@ class CategoryActivitiesResultWidget extends StatelessWidget {
                           ).toList()
                             ..add(
                                 InkWell(
-                                  onTap: () => {},
+                                  onTap: () => {
+                                },
                                   splashColor: Theme.of(context).primaryColor,
                                   borderRadius: BorderRadius.circular(15),
                                   child:
-                                  Container(
-                                    padding: const EdgeInsets.all(15),
-                                    child:
-                                    ClipRRect(
-                                        borderRadius: BorderRadius.circular(50),
-                                        child:
-                                        Icon(Icons.add,
-                                          color: Theme.of(context).colorScheme.secondary,
-                                          size: 60,
-                                        )
-                                    ),
-                                    decoration:
-                                    BoxDecoration(
-                                      gradient:
-                                      LinearGradient(
-                                        colors: [
-                                          Theme.of(context).primaryColor.withOpacity(0.7),
-                                          Theme.of(context).primaryColor,
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
+                                    Container(
+                                      padding: const EdgeInsets.all(15),
+                                      child:
+                                      ClipRRect(
+                                          borderRadius: BorderRadius.circular(50),
+                                          child:
+                                          Icon(Icons.add,
+                                            color: Theme.of(context).colorScheme.secondary,
+                                            size: 60,
+                                          )
                                       ),
-                                      borderRadius: BorderRadius.circular(15),
+                                      decoration:
+                                      BoxDecoration(
+                                        gradient:
+                                        LinearGradient(
+                                          colors: [
+                                            Theme.of(context).primaryColor.withOpacity(0.7),
+                                            Theme.of(context).primaryColor,
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ),
+                                        borderRadius: BorderRadius.circular(15),
+                                      ),
                                     ),
-                                  ),
                                 )
                             ),
                           gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(

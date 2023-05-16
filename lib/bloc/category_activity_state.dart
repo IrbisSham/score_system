@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import '../api/search_category_activity.dart';
 import '../model/entity.dart';
 import 'bloc_event_state.component.dart';
 

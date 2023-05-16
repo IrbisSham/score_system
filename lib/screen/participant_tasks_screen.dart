@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:score_system/model/person.dart';
@@ -9,6 +10,7 @@ import 'package:score_system/util/date_util.dart';
 import 'package:score_system/vocabulary/constant.dart';
 import 'package:score_system/vocabulary/task_data.dart';
 
+import '../current_data.dart';
 import '../locator.dart';
 import '../model/person_task_progress.dart';
 import '../navigation/pass_arguments.dart';
@@ -31,7 +33,7 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
   late DateTime _dtBeg;
   late DateTime _dtEnd;
   late PersonProgress? _personProgress;
-  late List<PersonTaskProgress>? _personTaskProgress;
+  late List<PersonTaskProgress>? _personTaskProgresses;
   int selectedIndex = 0;
   Map<String, bool> taskCheck = {};
 
@@ -53,23 +55,30 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as PersonDatesIntervalArguments;
+    Object? arguments = ModalRoute.of(context)!.settings.arguments;
+    if (arguments == null) {
+      arguments = PersonDatesIntervalArguments(
+          CURRENT_USER,
+          DATE_TIME_MIN,
+          DATE_TIME_MAX
+      );
+    }
+    final args = arguments as PersonDatesIntervalArguments;
     _person = args.person;
-    final DateTime now = DateTime.now();
     _dtBeg = args.dtBeg;
     _dtEnd = args.dtEnd;
     _personProgress = locator<PersonService>().getPersonProgress(_person, _dtBeg, _dtEnd)[_person];
-    _personTaskProgress = locator<PersonService>().getPersonTaskProgress(_person, _dtBeg, _dtEnd)[_person];
-    if (_personTaskProgress != null) {
+    _personTaskProgresses = locator<PersonService>().getPersonTaskProgress(_person, _dtBeg, _dtEnd)[_person];
+    if (_personTaskProgresses != null) {
       int cnt = -1;
-      _personTaskProgress!.forEach((element) {
+      _personTaskProgresses!.forEach((element) {
         int i = ++cnt;
         TextEditingController controller = TextEditingController(text: '${element.sum}' );
         // Start listening to changes.
         controller.addListener(() => _taskFactModiSum(element, int.parse(controller.text)));
-        String id = _personTaskProgress![i].id;
+        String id = _personTaskProgresses![i].id;
         scoreController[id] = controller;
-        taskCheck[id] = _personTaskProgress![i].status == TaskStatus.DONE ? true : false;
+        taskCheck[id] = _personTaskProgresses![i].status == TaskStatus.DONE ? true : false;
       });
     }
     return Scaffold(
@@ -78,7 +87,7 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
           alignment: Alignment.center,
           child: Text(
             _person.fio(),
-            style: TextStyle(fontSize: 18),
+            style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
           ),
         ),
       ),
@@ -131,9 +140,9 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
                         // padding: EdgeInsets.only(left: 30),
                         alignment: Alignment.center,
                         child:
-                        _personProgress == null ? Text("Нет данных") :
+                        _personProgress == null ? Text('NoData'.tr()) :
                         Text(
-                          "Всего $scoreTitlePart: ${_personProgress!.sumAll}",
+                          'Total'.tr() + ": $scoreTitlePart: ${_personProgress!.sumAll}",
                           style: TextStyle(
                             fontSize: 20,
                             color: Theme.of(context).colorScheme.secondary,
@@ -146,7 +155,7 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
                         alignment: Alignment.center,
                         child:
                         Text(
-                          "Сегодня: ${_personProgress!.sumLocal}",
+                          'Today'.tr() + ": ${_personProgress!.sumLocal}",
                           style: TextStyle(
                             fontSize: 20,
                             color: Theme.of(context).colorScheme.secondary,
@@ -162,10 +171,10 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
               ListView(
                 children:
                   [
-                    if (_personTaskProgress == null || _personTaskProgress!.isEmpty) ...[
+                    if (_personTaskProgresses == null || _personTaskProgresses!.isEmpty) ...[
                       Container(),
                     ] else ...
-                      _personTaskProgress!.map((personTaskProgress) =>
+                      _personTaskProgresses!.map((personTaskProgress) =>
                           Row(
                             mainAxisSize: MainAxisSize.max,
                             // crossAxisAlignment: CrossAxisAlignment.end,
@@ -234,7 +243,7 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
                                       width: MediaQuery.of(context).size.width / 5,
                                       // alignment: Alignment.center,
                                       child:
-                                        Text(DateUtil.DATE_FORMATTER.format(personTaskProgress.dt))
+                                        Text(DateUtil.DATE_TIME_FORMATTER.format(personTaskProgress.dt))
                                   )
                               ),
                               Container(
@@ -271,7 +280,7 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
     List<TaskFact> data = locator<TaskFactData>().getData();
     List<TaskFact> taskFacts = data
         .where((fact) =>
-          personTaskProgress.id == PersonTaskProgress.makeId(fact)).toList()
+          personTaskProgress.id == PersonTaskProgress.makeTaskFactId(fact)).toList()
         ;
     bool isCreate = false;
     if (taskFacts.isEmpty) {
@@ -279,20 +288,15 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
     }
     if (status) {
       if (isCreate) {
-        int taskFactCnt = data
-            .where((fact) =>
-              personTaskProgress.person.id == fact.person.id
-                && personTaskProgress.taskPlan.id == fact.taskPlan.id
-                && fact.dtExecute.isSameDate(now)).length;
         TaskFact taskFact = TaskFact(id: -1,
             taskPlan: personTaskProgress.taskPlan,
             person: _person,
             dtPlan: personTaskProgress.dt,
             dtExecute: now,
             sum: sum,
-            status: TaskStatus.DONE.status,
-            cnt: taskFactCnt + 1);
-        int id = locator<TaskFactData>().addEntity(taskFact);
+            status: TaskStatus.DONE.status
+        );
+        locator<TaskFactData>().addEntity(taskFact);
       } else {
         _taskFactModiStatus(personTaskProgress, TaskStatus.DONE.status);
       }
@@ -305,7 +309,7 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
 
   void _taskFactModiSum(PersonTaskProgress personTaskProgress, int sum) {
     List<TaskFact> data = locator<TaskFactData>().getData();
-    List<TaskFact> taskFacts = data.where((element) => PersonTaskProgress.makeId(element) == personTaskProgress.id).toList();
+    List<TaskFact> taskFacts = data.where((element) => PersonTaskProgress.makeTaskFactId(element) == personTaskProgress.id).toList();
     if (taskFacts.isNotEmpty) {
       taskFacts.first.sum = sum;
       locator<TaskFactData>().modifyEntity(taskFacts.first);
@@ -314,7 +318,7 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
 
   void _taskFactModiStatus(PersonTaskProgress personTaskProgress, int status) {
     List<TaskFact> data = locator<TaskFactData>().getData();
-    List<TaskFact> taskFacts = data.where((element) => PersonTaskProgress.makeId(element) == personTaskProgress.id).toList();
+    List<TaskFact> taskFacts = data.where((element) => PersonTaskProgress.makeTaskFactId(element) == personTaskProgress.id).toList();
     if (taskFacts.isNotEmpty) {
       taskFacts.first.status = status;
       locator<TaskFactData>().modifyEntity(taskFacts.first);

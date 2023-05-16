@@ -7,12 +7,11 @@ abstract class BlocBase {
 }
 
 abstract class BlocEvent {
-  @override
+  const BlocEvent();
   List<Object> get props => [];
 }
 
 abstract class BlocState {
-  @override
   List<Object> get props => [];
 }
 

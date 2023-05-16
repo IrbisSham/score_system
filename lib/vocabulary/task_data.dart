@@ -1,3 +1,4 @@
+import 'package:loggy/loggy.dart';
 import 'package:score_system/data/dbprovider.dart';
 import 'package:score_system/model/activity.dart';
 import 'package:score_system/model/person.dart';
@@ -6,12 +7,10 @@ import 'package:score_system/model/task.dart';
 import 'package:score_system/vocabulary/abstract_list_voc.dart';
 import 'package:score_system/vocabulary/activity_data.dart';
 import 'package:score_system/vocabulary/constant.dart';
-import 'package:loggy/loggy.dart';
 import 'package:score_system/vocabulary/person_data.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../locator.dart';
-import '../main.dart';
 
 class TaskPlanData extends EntitiesData<TaskPlan>{
 
@@ -28,10 +27,15 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
         avaPath: ACT_PATH + 'gym.png',
       ),
       schedule: [
-        Schedule(
-          date: DateTime(2022, 7, 13),
-          count: 3,
-        ),
+          Schedule(
+            date: DateTime(2022, 7, 13, 8, 30),
+          ),
+          Schedule(
+            date: DateTime(2022, 7, 13, 14, 0),
+          ),
+          Schedule(
+            date: DateTime(2022, 7, 13, 22, 0),
+          ),
       ],
       person: Person(
         id: 1,
@@ -54,7 +58,7 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
           date: DateTime(2022, 7, 13),
         ),
         Schedule(
-          date: DateTime(2022, 7, 13),
+          date: DateTime(2022, 7, 20),
         ),
       ],
       person: Person(
@@ -104,9 +108,10 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       schedule: [
         Schedule(
           date: DateTime(2022, 7, 13),
-          count: 3,
         ),
-
+        Schedule(
+          date: DateTime(2022, 7, 14),
+        ),
       ],
     ),
     TaskPlan(
@@ -129,7 +134,7 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
           date: DateTime(2022, 7, 13),
         ),
         Schedule(
-          date: DateTime(2022, 7, 13),
+          date: DateTime(2022, 7, 14),
         ),
       ],
     ),
@@ -153,7 +158,7 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
           date: DateTime(2022, 7, 13),
         ),
         Schedule(
-          date: DateTime(2022, 7, 13),
+          date: DateTime(2022, 7, 14),
         ),
       ],
     ),
@@ -164,12 +169,6 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
     return _localData;
   }
 
-  @override
-  void _setLocalData(List<TaskPlan> data){
-    _localData = data;
-  }
-
-  @override
   List<TaskPlan> _getDbData() {
     List<Map<String, Object?>> rez = [];
     late Database db;
@@ -225,7 +224,6 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
           .map((e) =>
             Schedule(
               date: DateTime.fromMicrosecondsSinceEpoch(int.parse(e.split('\-')[0])),
-              count: int.parse(e.split('\-')[1])
             )
           ).toList()
     );
@@ -269,13 +267,13 @@ class TaskFactData extends EntitiesData<TaskFact>{
         ),
         schedule: [
           Schedule(
-            date: DateTime(2022, 7, 13),
+            date: DateTime(2022, 7, 13, 8, 30),
           ),
           Schedule(
-            date: DateTime(2022, 7, 13),
+            date: DateTime(2022, 7, 13, 14, 0),
           ),
           Schedule(
-            date: DateTime(2022, 7, 13),
+            date: DateTime(2022, 7, 13, 22, 0),
           ),
         ],
         person: Person(
@@ -293,9 +291,9 @@ class TaskFactData extends EntitiesData<TaskFact>{
         fatherName: 'Юрьевич',
         avaPath: AVA_PATH + "Vitaliy.png",
       ),
-      dtPlan: DateTime(2022, 7, 13),
-      dtExecute: DateTime(2022, 7, 13),
-      sum: 2, cnt: 1,
+      dtPlan: DateTime(2022, 7, 13, 8, 30),
+      dtExecute: DateTime(2022, 7, 13, 9, 0),
+      sum: 2,
     ),
     TaskFact(
       id: 2,
@@ -312,7 +310,7 @@ class TaskFactData extends EntitiesData<TaskFact>{
             date: DateTime(2022, 7, 13),
           ),
           Schedule(
-            date: DateTime(2022, 7, 13),
+            date: DateTime(2022, 7, 14),
           ),
         ],
         person: Person(
@@ -331,9 +329,8 @@ class TaskFactData extends EntitiesData<TaskFact>{
         avaPath: AVA_PATH + "Vitaliy.png",
       ),
       dtPlan: DateTime(2022, 7, 13),
-      dtExecute: DateTime(2022, 7, 13),
+      dtExecute: DateTime(2022, 7, 14),
       sum: 2,
-      cnt: 1,
     ),
     TaskFact(
       id: 3,
@@ -367,7 +364,7 @@ class TaskFactData extends EntitiesData<TaskFact>{
       ),
       dtPlan: DateTime(2022, 7, 13),
       dtExecute: DateTime(2022, 7, 13),
-      sum: 2, cnt: 1,
+      sum: 2,
     ),
     TaskFact(
       id: 4,
@@ -405,7 +402,46 @@ class TaskFactData extends EntitiesData<TaskFact>{
       dtPlan: DateTime(2022, 7, 13),
       dtExecute: DateTime(2022, 7, 13),
       sum: 2,
-      cnt: 1,
+    ),
+    TaskFact(
+      id: 5,
+      taskPlan: TaskPlan(
+        id: 1,
+        activity: Activity(
+          id: 14,
+          name: 'Сделать зарядку',
+          sum: 2,
+          avaPath: ACT_PATH + 'gym.png',
+        ),
+        schedule: [
+          Schedule(
+            date: DateTime(2022, 7, 13, 8, 30),
+          ),
+          Schedule(
+            date: DateTime(2022, 7, 13, 14, 0),
+          ),
+          Schedule(
+            date: DateTime(2022, 7, 13, 22, 0),
+          ),
+        ],
+        person: Person(
+          id: 1,
+          name: 'Виталий',
+          family: 'Ермилов',
+          fatherName: 'Юрьевич',
+          avaPath: AVA_PATH + "Vitaliy.png",
+        ),
+      ),
+      person: Person(
+        id: 1,
+        name: 'Виталий',
+        family: 'Ермилов',
+        fatherName: 'Юрьевич',
+        avaPath: AVA_PATH + "Vitaliy.png",
+      ),
+      dtPlan: DateTime(2022, 7, 13, 14, 0),
+      dtExecute: DateTime(2022, 7, 13, 15, 30),
+      sum: 2,
     ),
   ];
 
@@ -414,7 +450,6 @@ class TaskFactData extends EntitiesData<TaskFact>{
     return "TaskFact";
   }
 
-  @override
   List<TaskFact> _getDbData() {
     List<Map<String, Object?>> rez = [];
     late Database db;
@@ -440,7 +475,6 @@ class TaskFactData extends EntitiesData<TaskFact>{
     return ["id", "status", "desc", "plan_id", "person_id", "dtPlan", "dtExecute"];
   }
 
-  @override
   void _setLocalData(List<TaskFact> data){
     _localData = data;
   }
@@ -471,7 +505,6 @@ class TaskFactData extends EntitiesData<TaskFact>{
         ),
         taskPlan: locator<TaskPlanData>().getEntity(map['${locator<TaskPlanData>().getTableName()}_id'] as int),
         sum: map['sum'] as int,
-        cnt: map['cnt'] as int,
     );
   }
 

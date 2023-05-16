@@ -5,13 +5,11 @@ import 'package:path/path.dart'; //used to join paths
 import 'package:path_provider/path_provider.dart'; //path_provider package
 import 'package:score_system/model/board.dart'; //import model class
 import 'package:score_system/vocabulary/activity_data.dart';
-import 'package:score_system/vocabulary/constant.dart';
 import 'package:score_system/vocabulary/person_data.dart';
 import 'package:score_system/vocabulary/task_data.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../locator.dart';
-import '../main.dart';
 import '../vocabulary/person_prize_data.dart';
 import '../vocabulary/prize_data.dart'; //sqflite package
 

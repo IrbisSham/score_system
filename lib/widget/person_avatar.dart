@@ -20,7 +20,7 @@ class _PersonAvaState extends State<PersonAva> {
   final ImagePicker picker = ImagePicker();
 
   Future getImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
+    final pickedFile = await picker.pickImage(source: ImageSource.camera, imageQuality: 50);
     setState(() {
       _image = File(pickedFile!.path);
     });

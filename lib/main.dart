@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:score_system/bloc/calendar_bloc.dart';
+import 'package:score_system/bloc/calendar_cubit.dart';
+import 'package:score_system/bloc/calendar_state.dart';
+import 'package:score_system/screen/participant_add_task_schedule_screen.dart';
+import 'package:score_system/screen/schedule_repeat_end_screen.dart';
+import 'package:score_system/screen/schedule_repeat_screen.dart';
+import 'package:score_system/screen/schedule_repeat_spec_screen.dart';
+import 'package:score_system/screen/user_new_screen.dart';
+import 'package:score_system/util/date_util.dart';
 import 'generated/codegen_loader.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:loggy/loggy.dart';
 import 'package:score_system/screen/encyclopedia_screen.dart';
 import 'package:score_system/screen/main_menu_screen.dart';
-import 'package:score_system/screen/participant_add_tasks_screen.dart';
+import 'package:score_system/screen/participant_add_task_screen.dart';
 import 'package:score_system/screen/participant_tasks_screen.dart';
-import 'package:score_system/screen/participants_prize_screen.dart';
+import 'package:score_system/screen/participants_success_screen.dart';
 import 'package:score_system/screen/participants_screen.dart';
-import 'package:score_system/screen/wiki/aims_screen.dart';
-import 'package:score_system/screen/wiki/annual_practice_screen.dart';
-import 'package:score_system/screen/wiki/errors_screen.dart';
-import 'package:score_system/screen/wiki/how_pause_screen.dart';
-import 'package:score_system/screen/wiki/how_use_screen.dart';
-import 'package:score_system/screen/wiki/long_results_screen.dart';
-import 'package:score_system/screen/wiki/resistance_screen.dart';
-import 'package:score_system/screen/wiki/wiki_screen.dart';
 import 'package:score_system/vocabulary/constant.dart';
 import 'package:score_system/vocabulary/person_data.dart';
 import 'current_data.dart';
@@ -36,7 +38,44 @@ void main() {
         path: 'asset/translation', // <-- change the path of the translation files
         fallbackLocale: Locale('en', 'US'),
         assetLoader: CodegenLoader(),
-        child: AppStartWidget()
+        child:
+        MultiBlocProvider(
+            providers: [
+              BlocProvider<CalendarCubit>(
+                create: (context) =>
+                    CalendarCubit(),
+              ),
+              BlocProvider<DayHourMinCubit>(
+                create: (context) =>
+                    DayHourMinCubit(),
+              ),
+              BlocProvider<WeekDayCubit>(
+                create: (context) =>
+                    WeekDayCubit(),
+              ),
+              BlocProvider<MonthDayCubit>(
+                create: (context) =>
+                    MonthDayCubit(),
+              ),
+              BlocProvider<YearMonthCubit>(
+                create: (context) =>
+                    YearMonthCubit(),
+              ),
+              BlocProvider<NumeralsWeekCubit>(
+                create: (context) =>
+                    NumeralsWeekCubit(),
+              ),
+              BlocProvider<SpecFrequencyBloc>(
+                create: (context) =>
+                    SpecFrequencyBloc(SPEC_FREQUENCY_DEFAULT),
+              ),
+              BlocProvider<SpecIntervalCubit>(
+                create: (context) =>
+                    SpecIntervalCubit(),
+              ),
+            ],
+            child: AppStartWidget()
+        )
     ),
   );
 }
@@ -53,7 +92,7 @@ class AppStartWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Person> persons = locator<PersonData>().getData();
-    _person = persons.isEmpty ? PERSON_DUMMY : persons.first;
+    _person = persons.isEmpty ? PERSON_DUMMY : persons.where((person) => person.isParticipant).first;
     CURRENT_USER = _person;
     // return FutureBuilder(
     //   future: Init.instance.initialize(),
@@ -76,30 +115,29 @@ class AppStartWidget extends StatelessWidget {
                 primaryColorDark: Color.fromRGBO(245, 209, 121, 1),
                 colorScheme: ColorScheme.fromSwatch().copyWith(
                   primary: Color.fromRGBO(245, 209, 121, 1),
-                  secondary: Color.fromRGBO(41, 108, 56, 1), // Your accent color
+                  secondary: Color.fromRGBO(108, 176, 107, 1), // Your accent color
                 ),
                 iconTheme: IconThemeData(color: Color.fromRGBO(245, 209, 121, 1)),
                 scaffoldBackgroundColor: Colors.white,
+                bottomNavigationBarTheme: BottomNavigationBarThemeData(
+                    selectedItemColor: Color.fromRGBO(108, 176, 107, 1),
+                ),
                 // Define the default font family.
                 fontFamily: 'SfPro',
                 // Define the default TextTheme. Use this to specify the default
                 // text styling for headlines, titles, bodies of text, and more.
                 textTheme: TextTheme(
-                  headline1: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
-                  headline6: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
-                  bodyText2: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
+                  displayLarge: TextStyle(fontSize: 72.0, fontWeight: FontWeight.bold),
+                  titleLarge: TextStyle(fontSize: 36.0, fontStyle: FontStyle.italic),
+                  bodyMedium: TextStyle(fontSize: 14.0, fontFamily: 'Hind'),
                 ),
                 cardTheme: CardTheme(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18.0),
                     )
                 ),
-                // canvasColor: Colors.red,
-                // shadowColor: Colors.red,
-                bottomAppBarColor: Colors.red,
                 // cardColor: Colors.red,
                 dividerColor: Colors.red,
-                buttonColor: Colors.white,
                 buttonTheme: ButtonThemeData(
                   buttonColor: Colors.red,
                   focusColor: Colors.red,
@@ -108,7 +146,7 @@ class AppStartWidget extends StatelessWidget {
                   splashColor: Colors.red,
                   // textTheme: ButtonTextTheme.primary,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0),),
-                ),
+                ), bottomAppBarTheme: BottomAppBarTheme(color: Colors.red),
                 // buttonTheme: ButtonThemeData(
                 //   buttonColor: Colors.orange, // Background color (orange in my case).
                 //   textTheme: ButtonTextTheme.accent,
@@ -150,21 +188,27 @@ class AppStartWidget extends StatelessWidget {
               //       'results_month': 'Результаты \n за \n месяц',
               //     }
               // ),
-              initialRoute: ParticipantPrizePage.ROUTE_NAME,
+              initialRoute: AddParticipantTaskPage.ROUTE_NAME,
               routes: {
                 '/choose_user': (context) => MainMenuPage(
                     title: 'Выберите трудягу',
-                    btnTitleMap: Map.fromIterable(locator<PersonData>().getData(), key: (person) => person.fio(), value: (person) => '/person')
+                    btnTitleMap: Map.fromIterable(locator<PersonData>().getData().where((person) => person.isParticipant).toList(), key: (person) => person.fio(), value: (person) => '/person')
                 ),
                 ParticipantsPage.ROUTE_NAME: (context) => ParticipantsPage(),
                 ParticipantTasksPage.ROUTE_NAME: (context) => ParticipantTasksPage(),
-                ParticipantPrizePage.ROUTE_NAME: (context) => ParticipantPrizePage(),
+                ParticipantSuccessPage.ROUTE_NAME: (context) => ParticipantSuccessPage(),
+                UserNewPage.ROUTE_NAME: (context) => UserNewPage(),
                 EncyclopediaPage.ROUTE_NAME: (context) => EncyclopediaPage(),
-                AddParticipantTasksPage.ROUTE_NAME: (context) =>
-                  AddParticipantTasksPage(
-                    context,
-                    _person,
-                  ),
+                AddParticipantTaskPage.ROUTE_NAME: (context) =>
+                  AddParticipantTaskPage(),
+                AddParticipantTaskSchedulePage.ROUTE_NAME: (context) =>
+                    AddParticipantTaskSchedulePage(),
+                ScheduleRepeatPage.ROUTE_NAME: (context) =>
+                    ScheduleRepeatPage(),
+                ScheduleRepeatSpecPage.ROUTE_NAME: (context) =>
+                    ScheduleRepeatSpecPage(),
+                ScheduleRepeatEndPage.ROUTE_NAME: (context) =>
+                    ScheduleRepeatEndPage(),
                 '/person': (context) => MainMenuPage(
                     title: 'Бальная система',
                     btnTitleMap: {
@@ -174,7 +218,7 @@ class AppStartWidget extends StatelessWidget {
                       'База \n знаний' : '/wiki',
                     }),
                 // ActivityChoosePage.ROUTE_NAME: (context) => ActivityChoosePage(context, null, locator<ActivityData>().getData()),
-              }
+              },
           );
   }
 
@@ -196,13 +240,6 @@ class Splash extends StatelessWidget {
               : Image.asset('${IMG_PATH}intro_dark.png')),
     );
   }
-}
-
-class ScreenArguments {
-  final String title;
-  final Map<String, String> btnTitleMap;
-
-  ScreenArguments(this.title, this.btnTitleMap);
 }
 
 class Init {

@@ -270,11 +270,6 @@ class ActivityData extends EntitiesData<Activity>{
   }
 
   @override
-  void _setLocalData(List<Activity> data){
-    _localData = data;
-  }
-
-  @override
   String getTableName() {
     return "Activity";
   }

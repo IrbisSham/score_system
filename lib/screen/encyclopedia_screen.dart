@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:score_system/screen/menu/bottom_menu.dart';
 import 'package:score_system/vocabulary/constant.dart';
@@ -8,7 +7,7 @@ import 'package:easy_localization/easy_localization.dart';
 class EncyclopediaPage extends StatelessWidget {
   
   static final String ROUTE_NAME = '/encyclopedia';
-  int _selectedIndex = 3;
+  final int _selectedIndex = 3;
 
   @override
   Widget build(BuildContext context) {

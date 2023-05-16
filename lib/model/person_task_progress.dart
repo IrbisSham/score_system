@@ -1,5 +1,4 @@
 import 'package:score_system/model/person.dart';
-import 'package:score_system/model/schedule.dart';
 import 'package:score_system/model/task.dart';
 
 import 'activity.dart';
@@ -57,5 +56,5 @@ class PersonTaskProgress {
     return result;
   }
 
-  static makeId(TaskFact fact) => '${fact.person.id}_${fact.taskPlan.id}_${fact.dtPlan}_${fact.cnt}';
+  static makeTaskFactId(TaskFact fact) => '${fact.person.id}_${fact.taskPlan.id}_${fact.dtPlan}';
 }

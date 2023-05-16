@@ -9,12 +9,23 @@ class TaskPlan extends HierarchEntity {
   late Activity activity;
   late List<Schedule> schedule;
   late Person person;
+  late DateTime? deadLine;
+  late String repeatExpr;
+  late String repeatEndExpr;
+  late String notificationExpr;
+  late List<DateTime>? notifications;
 
   TaskPlan({required int id, required Activity activity, String? name, String? desc, int status = 0,
-    required List<Schedule> schedule, required Person person}) :
+    required List<Schedule> schedule, required Person person, DateTime? deadLine,
+    String repeatExpr = "", String repeatEndExpr = "", String notificationExpr = "", List<DateTime>? notifications}) :
         this.activity = activity,
         this.schedule = schedule,
         this.person = person,
+        this.deadLine = deadLine,
+        this.repeatExpr = repeatExpr,
+        this.repeatEndExpr = repeatEndExpr,
+        this.notificationExpr = notificationExpr,
+        this.notifications = notifications,
         super(id: id, name: name, desc: desc, status: status);
 
   Map<String,dynamic> toMap(){ // used when inserting data to the database
@@ -25,6 +36,11 @@ class TaskPlan extends HierarchEntity {
       "desc" : desc,
       "schedule" : schedule,
       "person" : person,
+      "deadLine" : deadLine,
+      "repeatExpr" : repeatExpr,
+      "repeatEndExpr" : repeatEndExpr,
+      "notificationExpr" : notificationExpr,
+      "notifications" : notifications,
     };
   }
 
@@ -32,6 +48,11 @@ class TaskPlan extends HierarchEntity {
     this.activity = obj['activity'];
     this.schedule = obj['schedule'];
     this.person = obj['person'];
+    this.deadLine = obj['deadLine'];
+    this.repeatExpr = obj['repeatExpr'];
+    this.repeatEndExpr = obj['repeatEndExpr'];
+    this.notificationExpr = obj['notificationExpr'];
+    this.notifications = obj['notifications'];
   }
 
   @override
@@ -44,7 +65,12 @@ class TaskPlan extends HierarchEntity {
               && desc == other.desc
               && status == other.status
               && schedule == other.schedule
-              && person == other.person;
+              && person == other.person
+              && deadLine == other.deadLine
+              && repeatExpr == other.repeatExpr
+              && repeatEndExpr == other.repeatEndExpr
+              && notificationExpr == other.notificationExpr
+              && notifications == other.notifications;
 
   @override
   int get hashCode {
@@ -55,6 +81,11 @@ class TaskPlan extends HierarchEntity {
     result = 37 * result + status.hashCode;
     result = 37 * result + schedule.hashCode;
     result = 37 * result + person.hashCode;
+    result = 37 * result + deadLine.hashCode;
+    result = 37 * result + repeatExpr.hashCode;
+    result = 37 * result + repeatEndExpr.hashCode;
+    result = 37 * result + notificationExpr.hashCode;
+    result = 37 * result + notifications.hashCode;
     return result;
   }
 
@@ -95,16 +126,14 @@ class TaskFact extends HierarchEntity {
   late Person person;
   late DateTime dtPlan;
   late DateTime dtExecute;
-  late int cnt;
   late int sum;
 
   TaskFact({required int id, String? name, String? desc, String? parentIdList, int status = 0,
-    required TaskPlan taskPlan, required Person person, required DateTime dtPlan, required DateTime dtExecute, required int cnt, required int sum}) :
+    required TaskPlan taskPlan, required Person person, required DateTime dtPlan, required DateTime dtExecute, required int sum}) :
         this.taskPlan = taskPlan,
         this.person = person,
         this.dtPlan = dtPlan,
         this.dtExecute = dtExecute,
-        this.cnt = cnt,
         this.sum = sum,
         super(id: id, name: name, desc: desc, parentIdList: parentIdList, status: status);
 
@@ -117,7 +146,6 @@ class TaskFact extends HierarchEntity {
       "person" : person,
       "dtPlan" : dtPlan,
       "dtExecute" : dtExecute,
-      "cnt" : cnt,
       "sum" : sum,
     };
   }
@@ -127,7 +155,6 @@ class TaskFact extends HierarchEntity {
     this.person = obj['person'];
     this.dtPlan = obj['dtPlan'];
     this.dtExecute = obj['dtExecute'];
-    this.cnt = obj['cnt'];
     this.sum = obj['sum'];
   }
 
@@ -143,7 +170,6 @@ class TaskFact extends HierarchEntity {
               && person == other.person
               && dtPlan == other.dtPlan
               && dtExecute == other.dtExecute
-              && cnt == other.cnt
               && sum == other.sum;
 
   @override
@@ -156,7 +182,6 @@ class TaskFact extends HierarchEntity {
     result = 37 * result + person.hashCode;
     result = 37 * result + dtPlan.hashCode;
     result = 37 * result + dtExecute.hashCode;
-    result = 37 * result + cnt.hashCode;
     result = 37 * result + sum.hashCode;
     return result;
   }

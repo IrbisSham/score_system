@@ -1,5 +1,4 @@
 import 'package:score_system/model/person.dart';
-import 'package:score_system/model/schedule.dart';
 
 class PersonSuccess {
 

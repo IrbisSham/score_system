@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
 const String STRING_DELIMETER =",";
 const String IMG_PATH = 'asset/img/';
 const String AVA_PATH = 'asset/ava/';
@@ -16,9 +18,16 @@ const String FONT_FAMILY_SECOND = 'Pattaya';
 
 const bool IS_USE_CATEGORIES = false;
 
-/**
- * Pie
- */
+const double CONTAINER_WIDTH_KOEF = 0.95;
+
+const LIST_HALF_SCREEN_ACTIVE_INDEX = 2;
+const LIST_HALF_SCREEN_INDEX_LEN = 5;
+
+const MaterialColor SCREEN_INACTIVE_COLOR = Colors.grey;
+const MaterialColor SCREEN_ACTIVE_COLOR = Colors.blue;
+
+
+/// Pie
 const List<Color> taskPieColorList = const [
   Color(0xfffd79a8),
   Color(0xff6cb06b),

@@ -8,12 +8,18 @@ class Person extends HierarchEntity{
   late String fatherName;
   late String nickName;
   late String? avaPath;
+  late String email;
+  late bool isParticipant;
 
-  Person({required int id, required String name, String? desc, String? parentIdList, int status = 0, String? family, String? fatherName, String? nickName, String? avaPath}) :
+  Person({required int id, required String name, String? desc, String? parentIdList,
+    int status = 0, String? family, String? fatherName, String? nickName,
+    String? avaPath, String? email, bool? isParticipant}) :
         this.family = family ?? " ",
         this.fatherName = fatherName ?? " ",
         this.avaPath = avaPath,
+        this.email = email ?? "",
         this.nickName = nickName ?? name,
+        this.isParticipant = isParticipant ?? true,
         super(id: id, name: name, desc: desc, parentIdList: parentIdList, status: status);
 
   Map<String,dynamic> toMap(){ // used when inserting data to the database
@@ -26,6 +32,7 @@ class Person extends HierarchEntity{
       "fatherName" : fatherName,
       "nickName" : nickName,
       "avaPath" : avaPath,
+      "email" : email,
       "desc" : desc,
     };
   }
@@ -35,6 +42,7 @@ class Person extends HierarchEntity{
     this.fatherName = obj['fatherName'];
     this.nickName = obj['nickName'];
     this.avaPath = obj['avaPath'];
+    this.email = obj['email'];
   }
 
   String fio() {
@@ -57,7 +65,8 @@ class Person extends HierarchEntity{
               && family == other.family
               && fatherName == other.fatherName
               && nickName == other.nickName
-              && avaPath == other.avaPath;
+              && avaPath == other.avaPath
+              && email == other.email;
 
   @override
   int get hashCode {
@@ -69,6 +78,7 @@ class Person extends HierarchEntity{
     result = 37 * result + fatherName.hashCode;
     result = 37 * result + nickName.hashCode;
     result = 37 * result + avaPath.hashCode;
+    result = 37 * result + email.hashCode;
     return result;
   }
 

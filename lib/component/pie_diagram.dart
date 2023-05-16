@@ -73,7 +73,7 @@ class TaskStatPie extends StatelessWidget {
       animationDuration: Duration(milliseconds: 800),
       chartLegendSpacing: _chartLegendSpacing,
       chartRadius: math.min(MediaQuery.of(context).size.width / 3.2, 50),
-      colorList: _colorList.skip(0).toList(),
+      colorList: _colorList.skip(1).toList(),
       initialAngleInDegree: 0,
       chartType: _chartType!,
       centerText: _showCenterText ? _title : null,

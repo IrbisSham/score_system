@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:score_system/current_data.dart';
 import 'package:score_system/model/activity.dart';
 import 'package:score_system/model/board.dart';
-import 'package:score_system/model/person.dart';
 import 'package:score_system/service/response/board_response.dart';
 
 class BoardPage extends StatefulWidget {

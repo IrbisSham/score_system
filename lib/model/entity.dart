@@ -1,6 +1,12 @@
 import 'package:score_system/vocabulary/constant.dart';
 import 'package:tuple/tuple.dart';
 
+class IndexName {
+  final int index;
+  final String name;
+  IndexName({required this.index, required this.name});
+}
+
 class BaseEntity {
   late int id;
   String? name;

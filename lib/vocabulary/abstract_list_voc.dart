@@ -4,7 +4,6 @@ import 'package:score_system/model/entity.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../locator.dart';
-import '../main.dart';
 import 'constant.dart';
 
 abstract class EntitiesData<T extends BaseEntity> {

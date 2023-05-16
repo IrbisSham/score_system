@@ -1,14 +1,18 @@
-import 'package:flutter/cupertino.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
 import 'package:score_system/current_data.dart';
+import 'package:score_system/screen/participant_tasks_screen.dart';
 import 'package:score_system/vocabulary/person_data.dart';
 import '../locator.dart';
 import '../model/person.dart';
+import '../navigation/pass_arguments.dart';
 import '../widget/person_avatar.dart';
 import 'package:flutter/foundation.dart';
 
 class UserNewPage extends StatefulWidget {
+
+  static final String ROUTE_NAME = '/user/new';
 
   @override
   State<StatefulWidget> createState() => UserNewPageState();
@@ -16,20 +20,22 @@ class UserNewPage extends StatefulWidget {
 }
 
 class UserNewPageState extends State<UserNewPage> {
-  
-  static final String ROUTE_NAME = '/user/new';
+
   String _fio = '';
   String _email = '';
+  bool _isButtonOkEnabled = false;
   bool _isParticipate = false;
+  final TextEditingController _fioController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController _fioController = TextEditingController(
-      text: _fio,
-    );
-    TextEditingController _emailController = TextEditingController(
-      text: _email,
-    );
+    _fioController.text = _fio;
+    _fioController.selection = TextSelection.fromPosition(TextPosition(offset: _fioController.text.length));
+    _fioController.addListener(_showButtonOk);
+    _emailController.text = _email;
+    _emailController.selection = TextSelection.fromPosition(TextPosition(offset: _emailController.text.length));
+    _emailController.addListener(_showButtonOk);
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme
@@ -39,7 +45,7 @@ class UserNewPageState extends State<UserNewPage> {
           title: CURRENT_USER != PERSON_DUMMY ? Container(
             alignment: Alignment.center,
             child: Text(
-              Localization.loc.userNewScreenTitle,
+              'UserNewScreen.Title'.tr(),
               style:
               TextStyle(fontSize: 24,
                 color: Theme
@@ -53,40 +59,65 @@ class UserNewPageState extends State<UserNewPage> {
         body:
             Center(
               child:
-                Column(
-                  children: [
-                    Padding(padding: EdgeInsets.only(top: 30)),
-                    PersonAva(),
-                    Padding(padding: EdgeInsets.only(top: 30)),
-                    TextFormField(
-                      controller: _fioController,
-                      decoration: InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: Localization.loc.userNameTitle,
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.only(top: 20)),
-                    TextFormField(
-                      validator: (value) => _validateEmail(value),
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        border: UnderlineInputBorder(),
-                        labelText: Localization.loc.emailNameTitle,
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.only(top: 30)),
-                    Row(
+                Container(
+                  width: MediaQuery.of(context).size.width * 0.95,
+                  height: MediaQuery.of(context).size.height * 0.95,
+                  child:
+                    Column(
                       children: [
-                        Text(Localization.loc.userNewScreenParticipation),
-                        Switch(
-                          onChanged: _toggleSwitch,
-                          value: _isParticipate,
-                          activeColor: Color.fromRGBO(52, 199, 89, 1),
-                          activeTrackColor: Colors.white,
-                          inactiveThumbColor: Colors.white,
-                          inactiveTrackColor: Color.fromRGBO(120, 120, 128, 1),
+                        Row(
+                          children: [
+                            PersonAva(),
+                            Padding(padding: EdgeInsets.only(left: MediaQuery.of(context).size.height * 0.02)),
+                            Column(
+                              children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width * 0.6,
+                                  child:
+                                    TextField(
+                                      controller: _fioController,
+                                      // use the getter variable defined above
+                                      decoration: InputDecoration(
+                                        border: UnderlineInputBorder(),
+                                        labelText: 'UserNewScreen.UserNameTitle'.tr(),
+                                        errorText: _errorFioText,
+                                      ),
+                                      onChanged: (text) => setState(() => _fio = text),
+                                    ),
+                                ),
+                                Container(
+                                  width: MediaQuery.of(context).size.width * 0.6,
+                                  child:
+                                    TextField(
+                                      controller: _emailController,
+                                      decoration: InputDecoration(
+                                        border: UnderlineInputBorder(),
+                                        labelText: 'UserNewScreen.EmailNameTitle'.tr(),
+                                        errorText: _errorEmailText,
+                                      ),
+                                      onChanged: (text) => setState(() => _email = text),
+                                    ),
+                                )
+                              ],
+                            )
+                          ],
                         ),
-                        Text(Localization.loc.userNewScreenPartDesc,
+                        Padding(padding: EdgeInsets.only(top: 20)),
+                        Row(
+                          children: [
+                            Text('UserNewScreen.Participation'.tr()),
+                            Padding(padding: EdgeInsets.only(left: MediaQuery.of(context).size.height * 0.02)),
+                            Switch(
+                              onChanged: _toggleSwitch,
+                              value: _isParticipate,
+                              activeColor: Theme.of(context).colorScheme.secondary,
+                              activeTrackColor: Color.fromRGBO(120, 120, 128, 1),
+                              inactiveThumbColor: Theme.of(context).colorScheme.primary,
+                              inactiveTrackColor: Colors.black12,
+                            ),
+                          ],
+                        ),
+                        Text('UserNewScreen.PartDesc'.tr(),
                           style:
                           TextStyle(
                             color: Color.fromRGBO(60, 60, 67, 0.6),
@@ -95,36 +126,55 @@ class UserNewPageState extends State<UserNewPage> {
                           ),
                         ),
                         Padding(padding: EdgeInsets.only(top: 50)),
-                        ElevatedButton(
-                          onPressed: () {
-                            _fio = _fioController.value.text;
-                            _email = _emailController.value.text;
-                            _storeInBase(_fio, _email);
-                          },
-                          child: Text(Localization.loc.buttonReady),
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                        ),
-                        kDebugMode ?
-                          ElevatedButton(
-                            onPressed: () {
-                              locator<PersonData>().removeEntity(CURRENT_USER);
-                            },
-                            child: Text('Remove current user'),
-                            style: ElevatedButton.styleFrom(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                        Container(
+                          alignment: Alignment.centerLeft,
+                          child:
+                            ElevatedButton(
+                              onPressed: !_isButtonOkEnabled ? null : () {
+                                _fio = _fioController.text;
+                                _email = _emailController.text;
+                                _storeInBase(_fio, _email);
+                                Navigator.pushNamed(
+                                  context,
+                                  ParticipantTasksPage.ROUTE_NAME,
+                                  arguments: PersonDatesIntervalArguments(
+                                      CURRENT_USER,
+                                      CURRENT_DATA_MIN,
+                                      CURRENT_DATA_MAX
+                                  ),
+                                );
+                              },
+                              child: Text('ButtonReady'.tr()),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).colorScheme.secondary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
                             ),
-                          )
-                        : Container(),
+                        ),
+                        Padding(padding: EdgeInsets.only(top: 20)),
+                        kDebugMode ?
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              child:
+                                ElevatedButton(
+                                  onPressed: () {
+                                    locator<PersonData>().removeEntity(CURRENT_USER);
+                                  },
+                                  child: Text('ButtonRemoveUser'.tr()),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                ),
+                            )
+                            : Container(),
                       ],
-                    )
-                  ],
-                ),
+                    ),
+                )
             )
     );
   }
@@ -135,30 +185,10 @@ class UserNewPageState extends State<UserNewPage> {
     });
   }
 
-  String? _validateEmail(String? value) {
-    String pattern =
-        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-        r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-        r"{0,253}[a-zA-Z0-9])?)*$";
-    RegExp regex = RegExp(pattern);
-    if (value == null || value.isEmpty || !regex.hasMatch(value))
-      return Localization.loc.emailNameValidatorMessage;
-    else
-      return null;
-  }
-
-  // TODO: Register on Server
-  Future _registerOnServer (String fio, String email) async {
-    throw UnsupportedError(Localization.loc.unsupportedError);
-  }
-
   void _storeInBase(String fio, String email) {
-    Person person = Person(id: -1, name: fio);
+    Person person = Person(id: -1, name: fio, email: email, isParticipant: _isParticipate);
     CURRENT_USER = CURRENT_USER == PERSON_DUMMY ? person : CURRENT_USER;
     locator<PersonData>().addEntity(person);
-    if (_email.isNotEmpty) {
-      _registerOnServer(_fio, _email);
-    }
     // Navigator.pushNamed(
     //   context,
     //   ParticipantTasksPage.ROUTE_NAME,
@@ -168,6 +198,51 @@ class UserNewPageState extends State<UserNewPage> {
     //       CURRENT_DATA_MAX
     //   ),
     // );
+  }
+
+  String? get _errorFioText {
+    final value = _fioController.text;
+    if (value.isEmpty)
+      return 'UserNewScreen.FieldNotEmptyFieldMessage'.tr();
+    if (value.length < 3)
+      return 'UserNewScreen.FieldLongerMessage'.tr();
+    return null;
+  }
+
+  String? get _errorEmailText {
+    final value = _emailController.text;
+    if (value.isEmpty)
+      return 'UserNewScreen.FieldNotEmptyFieldMessage'.tr();
+    String pattern =
+        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+        r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
+        r"{0,253}[a-zA-Z0-9])?)*$";
+    RegExp regex = RegExp(pattern);
+    if (!regex.hasMatch(value))
+      return 'UserNewScreen.FieldEmailCorrectMessage'.tr();
+    return null;
+  }
+
+  @override
+  void dispose() {
+    _fioController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+
+  void _showButtonOk() {
+    if (_isButtonOkEnabled && (_errorFioText != null || _errorEmailText != null)) {
+      setState(() {
+        _isButtonOkEnabled = false;
+      });
+    } else {
+      if (_errorFioText == null && _errorEmailText == null) {
+        setState(() {
+          _isButtonOkEnabled = true;
+        });
+      }
+    }
   }
 
 }

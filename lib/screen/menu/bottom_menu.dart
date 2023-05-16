@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:score_system/current_data.dart';
-import 'package:score_system/screen/participants_prize_screen.dart';
-import '../../locator.dart';
+import 'package:score_system/model/entity.dart';
+import 'package:score_system/screen/participant_add_task_screen.dart';
+import 'package:score_system/screen/participants_success_screen.dart';
 import '../../navigation/pass_arguments.dart';
 import '../encyclopedia_screen.dart';
 import '../participant_tasks_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-class BottomMenuItem {
-  final int index;
-  final String name;
+class BottomMenuItem extends IndexName {
   final Icon icon;
-  BottomMenuItem(this.index, this.name, this.icon);
+
+  BottomMenuItem({required int index, required String name, required Icon icon}) :
+        this.icon = icon,
+        super(index: index, name: name);
+
 }
 
 enum MENU_LABELS {
@@ -25,11 +28,11 @@ enum MENU_LABELS {
 extension MENU_LABELS_Extension on MENU_LABELS {
 
   static final labels = {
-    MENU_LABELS.TASKS: BottomMenuItem(0, 'BottomMenu.Tasks'.tr(), Icon(Icons.list)),
-    MENU_LABELS.SUCCESS: BottomMenuItem(1, 'BottomMenu.Success'.tr(), Icon(Icons.wine_bar)),
-    MENU_LABELS.ADD: BottomMenuItem(2, 'BottomMenu.Add'.tr(), Icon(Icons.add_circle_outline_rounded)),
-    MENU_LABELS.ENCYCLOPEDIA: BottomMenuItem(3, 'BottomMenu.Encyclopedia'.tr(), Icon(Icons.help)),
-    MENU_LABELS.SETTINGS: BottomMenuItem(3, 'BottomMenu.Settings'.tr(), Icon(Icons.settings)),
+    MENU_LABELS.TASKS: BottomMenuItem(index: 0, name: 'BottomMenu.Tasks'.tr(), icon: Icon(Icons.list)),
+    MENU_LABELS.SUCCESS: BottomMenuItem(index: 1, name: 'BottomMenu.Success'.tr(), icon: Icon(Icons.wine_bar)),
+    MENU_LABELS.ADD: BottomMenuItem(index: 2, name: 'BottomMenu.Add'.tr(), icon: Icon(Icons.add_circle_outline_rounded)),
+    MENU_LABELS.ENCYCLOPEDIA: BottomMenuItem(index: 3, name: 'BottomMenu.Encyclopedia'.tr(), icon: Icon(Icons.help)),
+    MENU_LABELS.SETTINGS: BottomMenuItem(index: 3, name: 'BottomMenu.Settings'.tr(), icon: Icon(Icons.settings)),
   };
 
   int get index => labels[this]!.index;
@@ -71,6 +74,19 @@ class MainBottomNavigationBar extends BottomNavigationBar {
       selectedIndex = index;
       MENU_LABELS menuLabels = MENU_LABELS.values[index];
       switch(menuLabels) {
+        case MENU_LABELS.SETTINGS:
+          throw UnsupportedError("Not realized yet");
+        case MENU_LABELS.ADD:
+          Navigator.pushNamed(
+            context,
+            AddParticipantTaskPage.ROUTE_NAME,
+            arguments: PersonDatesIntervalArguments(
+                CURRENT_USER,
+                CURRENT_DATA_MIN,
+                CURRENT_DATA_MAX
+            ),
+          );
+          break;
         case MENU_LABELS.TASKS:
           Navigator.pushNamed(
             context,
@@ -85,7 +101,7 @@ class MainBottomNavigationBar extends BottomNavigationBar {
         case MENU_LABELS.SUCCESS:
           Navigator.pushNamed(
             context,
-            ParticipantPrizePage.ROUTE_NAME,
+            ParticipantSuccessPage.ROUTE_NAME,
             arguments: PersonDatesIntervalArguments(
                 CURRENT_USER,
                 CURRENT_DATA_MIN,

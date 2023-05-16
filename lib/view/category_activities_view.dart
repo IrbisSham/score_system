@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:score_system/bloc/category_activity_bloc.dart';
 import 'package:score_system/bloc/category_activity_state.dart';
+import 'package:score_system/model/person.dart';
 import '../locator.dart';
 import '../stream/custom_stream_builder.dart';
 import '../widget/column_spacer.dart';
@@ -10,7 +10,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart' show Provider;
 
 class CategoryActivitiesView extends StatefulWidget {
-  const CategoryActivitiesView({Key? key}) : super(key: key);
+
+  final Person _person;
+
+  const CategoryActivitiesView(this._person, {Key? key}) : super(key: key);
 
   @override
   _CategoryActivitiesViewState createState() => _CategoryActivitiesViewState();
@@ -37,10 +40,10 @@ class _CategoryActivitiesViewState extends State<CategoryActivitiesView> {
         } else if (state == States.error) {
           return const _Error();
         } else if (state == States.init) {
-          return const _Init();
+          return _Init(this.widget._person);
         } else if (state == States.populated) {
           // If accesed the state here, throws an error
-          return const _DisplayWidget();
+          return _DisplayWidget(this.widget._person);
         }
         return const _Internal();
       },
@@ -91,7 +94,10 @@ class _Loading extends StatelessWidget {
 }
 
 class _Init extends StatelessWidget {
-  const _Init({Key? key}) : super(key: key);
+
+  final Person _person;
+
+  const _Init(this._person, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +108,17 @@ class _Init extends StatelessWidget {
       child: Column(
         children: [
           _Internal(),
-          CategoryActivitiesResultWidget(items: results.items)],
+          CategoryActivitiesResultWidget(person: _person, items: results.items)],
       ),
     );
   }
 }
 
 class _DisplayWidget extends StatelessWidget {
-  const _DisplayWidget({Key? key}) : super(key: key);
+
+  final Person _person;
+
+  const _DisplayWidget(this._person, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +129,7 @@ class _DisplayWidget extends StatelessWidget {
       child: Column(
         children: [
           _Internal(),
-          CategoryActivitiesResultWidget(items: results.items)],
+          CategoryActivitiesResultWidget(person: _person, items: results.items)],
       ),
     );
   }

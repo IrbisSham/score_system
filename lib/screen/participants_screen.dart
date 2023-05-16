@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:score_system/screen/menu/bottom_menu.dart';
 import 'package:score_system/service/person_service.dart';
@@ -21,7 +22,7 @@ class ParticipantsPage extends StatefulWidget {
 }
 
 class ParticipantsPageState extends State<ParticipantsPage> {
-  final String _participantsTitle = "Участники";
+  final String _participantsTitle = 'ParticipantsScreen.Participants'.tr();
   int _selectedIndex = 0;
 
   late final DateTime _dtBeg;
@@ -31,7 +32,6 @@ class ParticipantsPageState extends State<ParticipantsPage> {
   @override
   void initState() {
     super.initState();
-    final DateTime now = DateTime.now();
     _dtBeg = CURRENT_DATA_MIN;
     _dtEnd = CURRENT_DATA_MAX;
   }
@@ -45,7 +45,7 @@ class ParticipantsPageState extends State<ParticipantsPage> {
           alignment: Alignment.center,
           child: Text(
             _participantsTitle,
-            style: TextStyle(fontSize: 24),
+            style: TextStyle(fontSize: 24, color: Colors.black, fontWeight: FontWeight.bold),
           ),
         ),
       ),
@@ -106,7 +106,7 @@ class ParticipantsPageState extends State<ParticipantsPage> {
                                           alignment: Alignment.center,
                                           child:
                                             Text(
-                                              "Всего баллов: ${personProgress.sumAll}",
+                                              "${'ParticipantsScreen.TotalScore'.tr()} ${personProgress.sumAll}",
                                               style: TextStyle(
                                                 fontSize: 20,
                                                 color: Theme.of(context).colorScheme.secondary,
@@ -119,7 +119,7 @@ class ParticipantsPageState extends State<ParticipantsPage> {
                                           alignment: Alignment.center,
                                           child:
                                             Text(
-                                              "Сегодня: ${personProgress.sumLocal}",
+                                              "${'Today'.tr()}: ${personProgress.sumLocal}",
                                               style: TextStyle(
                                                 fontSize: 20,
                                                 color: Theme.of(context).colorScheme.secondary,

@@ -1,42 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:score_system/model/person.dart';
 import 'package:score_system/screen/menu/bottom_menu.dart';
+import '../current_data.dart';
 import '../locator.dart';
-import '../model/activity.dart';
+import '../navigation/pass_arguments.dart';
 import '../view/category_activities_view.dart';
 import '../vocabulary/person_data.dart';
 
-class AddParticipantTasksPage extends StatefulWidget {
+class AddParticipantTaskPage extends StatefulWidget {
 
-  late Person? _person;
-  late Person person;
-  String _searchStr = "";
-  late Activity _activitySelected;
+  Person? _person;
+  final String _searchStr = "";
 
   final String participantsTitle = "Поставьте участнику новую задачу";
-  static final String ROUTE_NAME = '/participant_add_tasks';
+  static const String ROUTE_NAME = '/participant_add_task';
 
-  AddParticipantTasksPage(BuildContext context, Person? person) {
-    if (person == null) {
-      List<Person> persons = locator<PersonData>().getData();
-      _person = persons.isEmpty ? null : persons.first;
-    } else {
-      _person = person;
-    }
-    this._person = person;
-  }
+  AddParticipantTaskPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _AddParticipantTasksPageState();
+  State<StatefulWidget> createState() => _AddParticipantTaskPageState();
 
 }
 
-class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
+class _AddParticipantTaskPageState extends State<AddParticipantTaskPage> {
   late TextEditingController searchController;
   int selectedIndex = 2;
 
   @override
   void dispose() {
+    searchController.dispose();
     super.dispose();
   }
 
@@ -47,13 +39,16 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (this.widget._person == null) {
-      return Scaffold(
-          body: SimpleDialog(title: Text('Не выбран участник!'))
-      );
-    } else {
-      this.widget.person = this.widget._person!;
+    Object? arguments = ModalRoute.of(context)!.settings.arguments;
+    if (arguments != null) {
+      final args = arguments as PersonArguments;
+      widget._person = args.person;
     }
+    if (widget._person == null) {
+      List<Person> persons = locator<PersonData>().getData().where((person) => person.isParticipant).toList();
+      widget._person = persons.isEmpty ? CURRENT_USER : persons.first;
+    }
+
     searchController = TextEditingController(text: this.widget._searchStr);
     // Start listening to changes.
     return Scaffold(
@@ -61,8 +56,8 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
         title: Container(
           alignment: Alignment.center,
           child: Text(
-            this.widget.person.fio(),
-            style: TextStyle(fontSize: 18),
+            this.widget._person!.fio(),
+            style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
           ),
         ),
       ),
@@ -77,7 +72,7 @@ class _AddParticipantTasksPageState extends State<AddParticipantTasksPage> {
                     SingleChildScrollView(
                       scrollDirection: Axis.vertical,
                       child:
-                      CategoryActivitiesView(),
+                      CategoryActivitiesView(this.widget._person!),
                     ),
                   ),
                 ]

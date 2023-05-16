@@ -1,9 +1,5 @@
-import '../api/search_contract.dart';
-import '../locator.dart';
-import '../vocabulary/activity_data.dart';
 import '../vocabulary/constant.dart';
 import 'entity.dart';
-import 'package:tuple/tuple.dart';
 
 class Activity extends HierarchEntity{
   int sum;

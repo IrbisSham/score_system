@@ -51,6 +51,7 @@ class PersonData extends EntitiesData<Person>{
         family: 'Ермилова',
         fatherName: 'Витальевна',
         avaPath: AVA_PATH + "Julia.png",
+        isParticipant: false,
       ),
     ];
   }

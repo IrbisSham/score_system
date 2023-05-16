@@ -54,11 +54,6 @@ class PersonPrizeData extends EntitiesData<PersonPrize>{
   }
 
   @override
-  void _setLocalData(List<PersonPrize> data){
-    _localData = data;
-  }
-
-  @override
   String getTableName() {
     return "PersonPrize";
   }
