@@ -181,6 +181,18 @@ class PersonService {
     return rezMap;
   }
 
+  List<PersonTaskProgress> getPersonsTaskProgress(Map<Person, List<PersonTaskProgress>> personProgress) {
+    List<PersonTaskProgress> rez = [];
+    personProgress.entries.forEach((entry) {
+      var person = entry.key;
+      entry.value.forEach((taskProgress) {
+        rez.add(taskProgress);
+      });
+    });
+    return rez;
+  }
+
+
   /// Get person progress. If person == null then get all persons progress
   Map<Person, List<PersonTaskProgress>> getPersonTaskProgress(Person? currentPerson, DateTime dtBegin, DateTime dtEnd) {
     Map<Person, List<PersonTaskProgress>> rezMap = {};
@@ -210,7 +222,7 @@ class PersonService {
                 Person personCurr = factsSucc.isNotEmpty ? factsSucc.first.person : plan.person;
                 List<PersonTaskProgress>? oldVal = rezMap[personCurr];
                 PersonTaskProgress personTaskProgress = PersonTaskProgress(
-                  id: '${currentPerson?.id}_${plan.id}_${sched.date}',
+                  id: '${personCurr.id}_${plan.id}_${sched.date}',
                   person: personCurr,
                   taskPlan: plan,
                   activity: plan.activity,

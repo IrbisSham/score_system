@@ -140,28 +140,29 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
                         // padding: EdgeInsets.only(left: 30),
                         alignment: Alignment.center,
                         child:
-                        _personProgress == null ? Text('NoData'.tr()) :
-                        Text(
-                          'Total'.tr() + ": $scoreTitlePart: ${_personProgress!.sumAll}",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontFamily: FONT_FAMILY_SECOND,
-                          ),
-                        ),
+                          _personProgress == null ? Text('NoData'.tr()) :
+                            Text(
+                              'Total'.tr() + ": $scoreTitlePart: ${_personProgress!.sumAll}",
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontFamily: FONT_FAMILY_SECOND,
+                              ),
+                            ),
                       ),
                       Container(
                         // padding: EdgeInsets.only(left: 30),
                         alignment: Alignment.center,
                         child:
-                        Text(
-                          'Today'.tr() + ": ${_personProgress!.sumLocal}",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Theme.of(context).colorScheme.secondary,
-                            fontFamily: FONT_FAMILY_SECOND,
-                          ),
-                        ),
+                          _personProgress == null ? Text('NoData'.tr()) :
+                            Text(
+                              'Today'.tr() + ": ${_personProgress!.sumLocal}",
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Theme.of(context).colorScheme.secondary,
+                                fontFamily: FONT_FAMILY_SECOND,
+                              ),
+                            ),
                       ),
                     ],)
                   ],
@@ -187,9 +188,9 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
                                       width: MediaQuery.of(context).size.width / 5,
                                       // alignment: Alignment.center,
                                       child:
-                                      personTaskProgress.activity.avaPath != null ?
+                                      personTaskProgress.activity.image != null ?
                                       Image.asset(
-                                        personTaskProgress.activity.avaPath!,
+                                        personTaskProgress.activity.image!,
                                         color: Theme.of(context).colorScheme.primary,
                                       ) : Icon(Icons.description, color: Theme.of(context).colorScheme.primary)
                                   )
@@ -268,8 +269,6 @@ class _ParticipantTasksPageState extends State<ParticipantTasksPage> {
             ),
           ]
         ),
-            // );
-          // }),
       bottomNavigationBar: MainBottomNavigationBar(context, selectedIndex),
     );
 

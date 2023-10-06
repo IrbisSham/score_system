@@ -5,12 +5,12 @@ class Activity extends HierarchEntity{
   int sum;
   bool isCategory;
   bool isCategorized;
-  String? avaPath;
-  Activity({required int id, required String name, String? desc, String? parentIdList, int status = 0, int sum = 0, bool isCategory = false, bool isCategorized = false, String? avaPath}) :
+  String? image;
+  Activity({required int id, required String name, String? desc, String? parentIdList, int status = 0, int sum = 0, bool isCategory = false, bool isCategorized = false, String? image}) :
     this.sum = sum,
     this.isCategory = isCategory,
     this.isCategorized = isCategorized,
-    this.avaPath = avaPath,
+    this.image = image,
     super(id: id, name: name, desc: desc, parentIdList: parentIdList, status: status);
 
   Map<String,dynamic> toMap(){ // used when inserting data to the database
@@ -23,7 +23,7 @@ class Activity extends HierarchEntity{
       "sum" : sum,
       "isCategory" : isCategory,
       "isCategorized" : isCategorized,
-      "avaPath" : avaPath,
+      "avaPath" : image,
     };
   }
 
@@ -40,7 +40,7 @@ class Activity extends HierarchEntity{
               && sum == other.sum
               && isCategory == other.isCategory
               && isCategorized == other.isCategorized
-              && avaPath == other.avaPath;
+              && image == other.image;
 
   @override
   int get hashCode {
@@ -53,7 +53,7 @@ class Activity extends HierarchEntity{
     result = 37 * result + sum.hashCode;
     result = 37 * result + isCategory.hashCode;
     result = 37 * result + isCategorized.hashCode;
-    result = 37 * result + avaPath.hashCode;
+    result = 37 * result + image.hashCode;
     return result;
   }
 

@@ -24,7 +24,7 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
         id: 14,
         name: 'Сделать зарядку',
         sum: 2,
-        avaPath: ACT_PATH + 'gym.png',
+        image: ACT_PATH + 'gym.png',
       ),
       schedule: [
           Schedule(
@@ -50,7 +50,7 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       activity: Activity(
         id: 15,
         name: 'Протереть мебель',
-        avaPath: ACT_PATH + 'dusting_furniture.png',
+        image: ACT_PATH + 'dusting_furniture.png',
         sum: 3,
       ),
       schedule: [
@@ -74,7 +74,7 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       activity: Activity(
         id: 16,
         name: 'Глажка',
-        avaPath: ACT_PATH + 'ironing.png',
+        image: ACT_PATH + 'ironing.png',
         sum: 4,
       ),
       person: Person(
@@ -95,7 +95,7 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       activity: Activity(
         id: 17,
         name: 'Заправить кровать',
-        avaPath: ACT_PATH + 'bed_make.png',
+        image: ACT_PATH + 'bed_make.png',
         sum: 1,
       ),
       person: Person(
@@ -119,7 +119,7 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       activity: Activity(
         id: 18,
         name: 'Вынести мусор',
-        avaPath: ACT_PATH + 'garbage_out.png',
+        image: ACT_PATH + 'garbage_out.png',
         sum: 2,
       ),
       person: Person(
@@ -143,7 +143,7 @@ class TaskPlanData extends EntitiesData<TaskPlan>{
       activity: Activity(
         id: 19,
         name: 'Приготовить еду',
-        avaPath: ACT_PATH + 'cooking.png',
+        image: ACT_PATH + 'cooking.png',
         sum: 4,
       ),
       person: Person(
@@ -263,7 +263,7 @@ class TaskFactData extends EntitiesData<TaskFact>{
           id: 14,
           name: 'Сделать зарядку',
           sum: 2,
-          avaPath: ACT_PATH + 'gym.png',
+          image: ACT_PATH + 'gym.png',
         ),
         schedule: [
           Schedule(
@@ -302,7 +302,7 @@ class TaskFactData extends EntitiesData<TaskFact>{
         activity: Activity(
           id: 17,
           name: 'Заправить кровать',
-          avaPath: ACT_PATH + 'bed_make.png',
+          image: ACT_PATH + 'bed_make.png',
           sum: 2,
         ),
         schedule: [
@@ -339,7 +339,7 @@ class TaskFactData extends EntitiesData<TaskFact>{
         activity: Activity(
           id: 16,
           name: 'Глажка',
-          avaPath: ACT_PATH + 'ironing.png',
+          image: ACT_PATH + 'ironing.png',
           sum: 2,
         ),
         person: Person(
@@ -373,7 +373,7 @@ class TaskFactData extends EntitiesData<TaskFact>{
         activity: Activity(
           id: 15,
           name: 'Протереть мебель',
-          avaPath: ACT_PATH + 'dusting_furniture.png',
+          image: ACT_PATH + 'dusting_furniture.png',
           sum: 2,
         ),
         schedule: [
@@ -411,7 +411,7 @@ class TaskFactData extends EntitiesData<TaskFact>{
           id: 14,
           name: 'Сделать зарядку',
           sum: 2,
-          avaPath: ACT_PATH + 'gym.png',
+          image: ACT_PATH + 'gym.png',
         ),
         schedule: [
           Schedule(

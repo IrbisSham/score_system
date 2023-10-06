@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,14 +17,25 @@ class PersonAva extends StatefulWidget {
 
 class _PersonAvaState extends State<PersonAva> {
 
-  File? _image;
+  Uint8List? _image;
   final ImagePicker picker = ImagePicker();
 
   Future getImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.camera, imageQuality: 50);
-    setState(() {
-      _image = File(pickedFile!.path);
-    });
+    final Uint8List? image = await galleryImagePicker();
+    if (image != null) {
+      _image = image;
+      setState(() {});
+    }
+  }
+
+  Future<Uint8List?> galleryImagePicker() async {
+    ImagePicker picker = ImagePicker();
+    XFile? file = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 90,
+    );
+    if (file != null) return await file.readAsBytes(); // convert into Uint8List.
+    return null;
   }
 
   @override
@@ -39,7 +51,10 @@ class _PersonAvaState extends State<PersonAva> {
               radius: 38.0,
               child: ClipOval(
                 child: (_image != null)
-                    ? Image.file(_image!)
+                ? Image.memory (
+                  _image!,
+                  fit: BoxFit.cover,
+                )
                     : null,
               ),
               backgroundColor: Colors.white,

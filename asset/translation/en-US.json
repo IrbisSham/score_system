@@ -4,6 +4,18 @@
     "Ok": "Ok",
     "Cancel": "Cancel"
   },
+  "ScoreWords": {
+    "1": "score",
+    "2": "scores",
+    "3": "scores",
+    "4": "scores",
+    "5": "scores",
+    "6": "scores",
+    "7": "scores",
+    "8": "scores",
+    "9": "scores",
+    "0": "scores"
+  },
   "EncyclopediaPage": {
     "ScreenTitle": "Encyclopedia",
     "Theme":"Why does system work?",
@@ -22,6 +34,20 @@
   },
   "UserNewScreen": {
     "Title": "New user",
+    "ChoosePhoto": "Choose photo",
+    "Participation": "Will you participate?",
+    "PartDesc": "You can track your new healthy habits with your kids. Play together!",
+    "UserNameUndefined": "Unknown",
+    "UserNameTitle": "Enter your name",
+    "LoginTitle": "Enter your login",
+    "PasswordTitle": "Enter your password",
+    "EmailNameTitle": "Enter your email",
+    "FieldEmailCorrectMessage": "Enter a valid email address",
+    "FieldNotEmptyFieldMessage": "Field should not be empty",
+    "FieldLongerMessage": "User name should be longer then 2 symbols"
+  },
+  "EntranceScreen": {
+    "Title": "Entrance",
     "ChoosePhoto": "Choose photo",
     "Participation": "Will you participate?",
     "PartDesc": "You can track your new healthy habits with your kids. Play together!",

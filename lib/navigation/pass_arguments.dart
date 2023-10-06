@@ -8,6 +8,12 @@ class ScreenArguments {
   ScreenArguments(this.title, this.btnTitleMap);
 }
 
+class DatesIntervalArguments {
+  final DateTime dtBeg;
+  final DateTime dtEnd;
+  DatesIntervalArguments(this.dtBeg, this.dtEnd);
+}
+
 class PersonDatesIntervalArguments {
   final Person person;
   final DateTime dtBeg;

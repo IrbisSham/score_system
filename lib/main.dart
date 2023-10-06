@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:score_system/bloc/calendar_bloc.dart';
 import 'package:score_system/bloc/calendar_cubit.dart';
 import 'package:score_system/bloc/calendar_state.dart';
+import 'package:score_system/screen/entrance_screen.dart';
+import 'package:score_system/screen/main_screen.dart';
 import 'package:score_system/screen/participant_add_task_schedule_screen.dart';
 import 'package:score_system/screen/schedule_repeat_end_screen.dart';
 import 'package:score_system/screen/schedule_repeat_screen.dart';
@@ -188,12 +190,14 @@ class AppStartWidget extends StatelessWidget {
               //       'results_month': 'Результаты \n за \n месяц',
               //     }
               // ),
-              initialRoute: AddParticipantTaskPage.ROUTE_NAME,
+              initialRoute: EntrancePage.ROUTE_NAME,
               routes: {
                 '/choose_user': (context) => MainMenuPage(
                     title: 'Выберите трудягу',
                     btnTitleMap: Map.fromIterable(locator<PersonData>().getData().where((person) => person.isParticipant).toList(), key: (person) => person.fio(), value: (person) => '/person')
                 ),
+                EntrancePage.ROUTE_NAME: (context) => EntrancePage(),
+                ParticipantsTasksPage.ROUTE_NAME: (context) => ParticipantsTasksPage(),
                 ParticipantsPage.ROUTE_NAME: (context) => ParticipantsPage(),
                 ParticipantTasksPage.ROUTE_NAME: (context) => ParticipantTasksPage(),
                 ParticipantSuccessPage.ROUTE_NAME: (context) => ParticipantSuccessPage(),

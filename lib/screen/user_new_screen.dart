@@ -7,6 +7,7 @@ import 'package:score_system/vocabulary/person_data.dart';
 import '../locator.dart';
 import '../model/person.dart';
 import '../navigation/pass_arguments.dart';
+import '../util/word_util.dart';
 import '../widget/person_avatar.dart';
 import 'package:flutter/foundation.dart';
 
@@ -200,27 +201,12 @@ class UserNewPageState extends State<UserNewPage> {
     // );
   }
 
-  String? get _errorFioText {
-    final value = _fioController.text;
-    if (value.isEmpty)
-      return 'UserNewScreen.FieldNotEmptyFieldMessage'.tr();
-    if (value.length < 3)
-      return 'UserNewScreen.FieldLongerMessage'.tr();
-    return null;
+  String get _errorFioText {
+    return ScoreUtil.checkLoginOrFio(_fioController.text);
   }
 
-  String? get _errorEmailText {
-    final value = _emailController.text;
-    if (value.isEmpty)
-      return 'UserNewScreen.FieldNotEmptyFieldMessage'.tr();
-    String pattern =
-        r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-        r"{0,253}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]"
-        r"{0,253}[a-zA-Z0-9])?)*$";
-    RegExp regex = RegExp(pattern);
-    if (!regex.hasMatch(value))
-      return 'UserNewScreen.FieldEmailCorrectMessage'.tr();
-    return null;
+  String get _errorEmailText {
+    return ScoreUtil.checkEmail(_emailController.text);
   }
 
   @override
@@ -232,7 +218,7 @@ class UserNewPageState extends State<UserNewPage> {
 
 
   void _showButtonOk() {
-    if (_isButtonOkEnabled && (_errorFioText != null || _errorEmailText != null)) {
+    if (_isButtonOkEnabled && (_errorFioText != null || _errorEmailText.isNotEmpty)) {
       setState(() {
         _isButtonOkEnabled = false;
       });
