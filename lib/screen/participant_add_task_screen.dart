@@ -50,6 +50,7 @@ class _AddParticipantTaskPageState extends State<AddParticipantTaskPage> {
     }
 
     searchController = TextEditingController(text: this.widget._searchStr);
+    searchController.selection = TextSelection.fromPosition(TextPosition(offset: searchController.text.length));
     // Start listening to changes.
     return Scaffold(
       appBar: AppBar(

@@ -202,11 +202,11 @@ class UserNewPageState extends State<UserNewPage> {
   }
 
   String get _errorFioText {
-    return ScoreUtil.checkLoginOrFio(_fioController.text);
+    return WordUtil.checkLoginOrFio(_fioController.text);
   }
 
   String get _errorEmailText {
-    return ScoreUtil.checkEmail(_emailController.text);
+    return WordUtil.checkEmail(_emailController.text);
   }
 
   @override

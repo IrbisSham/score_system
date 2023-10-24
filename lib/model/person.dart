@@ -9,17 +9,22 @@ class Person extends HierarchEntity{
   late String nickName;
   late String? avaPath;
   late String email;
+  late String login;
+  late String password;
   late bool isParticipant;
 
   Person({required int id, required String name, String? desc, String? parentIdList,
     int status = 0, String? family, String? fatherName, String? nickName,
-    String? avaPath, String? email, bool? isParticipant}) :
+    String? avaPath, String? email, bool? isParticipant,
+    String? login, String? password}) :
         this.family = family ?? " ",
         this.fatherName = fatherName ?? " ",
         this.avaPath = avaPath,
         this.email = email ?? "",
         this.nickName = nickName ?? name,
         this.isParticipant = isParticipant ?? true,
+        this.login = login ?? "",
+        this.password = password ?? "",
         super(id: id, name: name, desc: desc, parentIdList: parentIdList, status: status);
 
   Map<String,dynamic> toMap(){ // used when inserting data to the database
@@ -33,6 +38,8 @@ class Person extends HierarchEntity{
       "nickName" : nickName,
       "avaPath" : avaPath,
       "email" : email,
+      "login" : login,
+      "password" : password,
       "desc" : desc,
     };
   }
@@ -43,6 +50,8 @@ class Person extends HierarchEntity{
     this.nickName = obj['nickName'];
     this.avaPath = obj['avaPath'];
     this.email = obj['email'];
+    this.login = obj['login'];
+    this.password = obj['password'];
   }
 
   String fio() {
@@ -66,7 +75,9 @@ class Person extends HierarchEntity{
               && fatherName == other.fatherName
               && nickName == other.nickName
               && avaPath == other.avaPath
-              && email == other.email;
+              && email == other.email
+              && login == other.login
+              && password == other.password;
 
   @override
   int get hashCode {
@@ -79,6 +90,8 @@ class Person extends HierarchEntity{
     result = 37 * result + nickName.hashCode;
     result = 37 * result + avaPath.hashCode;
     result = 37 * result + email.hashCode;
+    result = 37 * result + login.hashCode;
+    result = 37 * result + password.hashCode;
     return result;
   }
 

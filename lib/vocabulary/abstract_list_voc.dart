@@ -20,7 +20,7 @@ abstract class EntitiesData<T extends BaseEntity> {
   }
 
   T getEntity(int id){
-    return isDbMode ? _getDbEntity(id) : _getLocalEntity(id);
+    return isDbMode ? _getDbEntityById(id) : getLocalEntity(id);
   }
 
   String getTableName();
@@ -29,19 +29,23 @@ abstract class EntitiesData<T extends BaseEntity> {
 
   void _setLocalData(List<T> data);
 
-  T _getDbEntity(int id) {
+  T getDbEntity(String whereExpr, List<Object?> whereArgs) {
     Map<String, Object?> rez = {};
     late Database db;
     final dbOpt = locator<ScoreSystemDbProvider>().init(); //open database
     dbOpt.then((value) => db = value);
     db.query(getTableName(),
               columns: getColumnNames(),
-              where: 'id = ?',
-              whereArgs: [id],
+              where: whereExpr,
+              whereArgs: whereArgs,
               )
         .then((value) => rez = value.first)
         .catchError((exception) => logError('Cannot load entity of table ${getTableName()}', exception));
     return dbDataToEntity(rez);
+  }
+
+  T _getDbEntityById(int id) {
+    return getDbEntity('id = ?', [id]);
   }
 
   List<T> _getDbData() {
@@ -59,7 +63,7 @@ abstract class EntitiesData<T extends BaseEntity> {
 
   List<T> getLocalData();
 
-  T _getLocalEntity(int id){
+  T getLocalEntity(int id){
     return getLocalData().where((element) => element.id == id).first;
   }
 

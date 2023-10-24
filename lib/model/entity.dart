@@ -30,7 +30,7 @@ class BaseEntity {
 
   BaseEntity.fromMap(dynamic obj) {
     this.id = obj['id'];
-    this.name = obj['fio'];
+    this.name = obj['name'];
     this.desc = obj['desc'];
   }
 

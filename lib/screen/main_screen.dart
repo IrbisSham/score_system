@@ -13,6 +13,7 @@ import '../locator.dart';
 import '../model/person_progress.dart';
 import '../model/person_task_progress.dart';
 import '../navigation/pass_arguments.dart';
+import '../util/score_util.dart';
 import '../util/word_util.dart';
 
 class ParticipantsTasksPage extends StatefulWidget {
@@ -64,10 +65,11 @@ class _ParticipantsTasksPageState extends State<ParticipantsTasksPage> {
     _dtBeg = args.dtBeg;
     _dtEnd = args.dtEnd;
     _personTaskProgresses = locator<PersonService>().getPersonTaskProgress(null, _dtBeg, _dtEnd);
-    _personTaskProgresses.entries..forEach((entry) {
+    _personTaskProgresses.entries.forEach((entry) {
       _personsProgress[entry.key] = locator<PersonService>().getPersonProgress(entry.key, _dtBeg, _dtEnd)[entry.key];
       entry.value.where((personProgress) => personProgress != null).forEach((personProgress) {
         TextEditingController controller = TextEditingController(text: '${personProgress.sum}' );
+        controller.selection = TextSelection.fromPosition(TextPosition(offset: controller.text.length));
         // Start listening to changes.
         controller.addListener(() => _taskFactModiSum(personProgress, int.parse(controller.text)));
         String id = personProgress.id;

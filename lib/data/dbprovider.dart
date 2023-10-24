@@ -41,8 +41,11 @@ class BallSystDbProvider{
           CREATE TABLE Person(
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           name TEXT,
-          family TEXT,
-          fathername TEXT)"""
+          login TEXT,
+          email TEXT,
+          password TEXT,
+          mobile TEXT,
+          )"""
           );
           await db.execute("""
           CREATE TABLE Board(
